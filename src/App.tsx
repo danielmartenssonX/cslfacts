@@ -9,7 +9,7 @@ import { useAssessmentStore } from './state/assessmentStore';
 import { getAnswer, getInvestigationItems, isStepComplete } from './state/selectors';
 import { downloadJson } from './services/exportJson';
 import { downloadMarkdown } from './services/exportMarkdown';
-import { triggerPrintToPdf } from './services/exportPdf';
+import { exportPdf } from './services/exportPdf';
 import type { Question } from './domain/types';
 import questionBankData from './data/questionBank.sv-SE.json';
 
@@ -246,7 +246,7 @@ function Step5Results({
         questions={allQuestions}
         onExportJson={() => downloadJson(state)}
         onExportMarkdown={() => downloadMarkdown(state)}
-        onExportPdf={triggerPrintToPdf}
+        onExportPdf={() => exportPdf(state)}
       />
     </div>
   );
