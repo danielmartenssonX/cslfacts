@@ -20,8 +20,12 @@ function findAnswer(
   questionId: string,
   functionId?: string,
 ): Answer | undefined {
+  // Matcha svar med exakt functionId, eller svar utan functionId (globala svar).
+  // Globala svar (functionId undefined) gäller alla funktioner.
   return answers.find(
-    (a) => a.questionId === questionId && (functionId ? a.functionId === functionId : true),
+    (a) =>
+      a.questionId === questionId &&
+      (functionId ? a.functionId === functionId || !a.functionId : true),
   );
 }
 
