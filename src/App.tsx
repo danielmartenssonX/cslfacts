@@ -61,86 +61,98 @@ function AssessmentListView({
   onShowInfo: () => void;
 }) {
   return (
-    <div className="mx-auto max-w-3xl px-6 py-10">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-csl-primary">CSL-verktyget</h1>
-          <p className="mt-1 text-sm text-csl-muted">
-            Klassificering av digitala tillgångar enligt IAEA NSS 17-T (Rev. 1)
+    <div className="min-h-screen">
+      {/* Hero med bakgrundsbild */}
+      <div className="relative overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('/hero-bg.png')" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-csl-primary/80 via-csl-primary/60 to-csl-background" />
+        <div className="relative mx-auto max-w-3xl px-6 pb-12 pt-16">
+          <h1 className="text-3xl font-bold text-white drop-shadow-sm">CSL-verktyget</h1>
+          <p className="mt-2 max-w-lg text-sm text-white/80">
+            Klassificering av digitala tillgångar enligt IAEA NSS 17-T (Rev. 1). Deterministisk
+            regelmotor — full spårbarhet utan dolda poäng.
           </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={onShowInfo}
-            className="flex items-center gap-1.5 rounded border border-gray-300 px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            <Info size={16} />
-            Om klassningen
-          </button>
-          <button
-            onClick={onCreate}
-            className="flex items-center gap-2 rounded bg-csl-primary px-4 py-2.5 text-sm font-medium text-white hover:opacity-90"
-          >
-            <Plus size={16} />
-            Ny klassning
-          </button>
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <button
+              onClick={onCreate}
+              className="flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-semibold text-csl-primary shadow-lg transition-transform hover:scale-[1.02]"
+            >
+              <Plus size={18} />
+              Ny klassning
+            </button>
+            <button
+              onClick={onShowInfo}
+              className="flex items-center gap-1.5 rounded-lg border border-white/30 bg-white/10 px-4 py-3 text-sm font-medium text-white backdrop-blur-sm hover:bg-white/20"
+            >
+              <Info size={16} />
+              Om klassningen
+            </button>
+          </div>
         </div>
       </div>
 
-      {assessments.length === 0 ? (
-        <div className="rounded-lg border-2 border-dashed border-gray-200 p-12 text-center">
-          <p className="text-lg font-medium text-gray-500">Inga klassningar ännu</p>
-          <p className="mt-2 text-sm text-gray-400">
-            Klicka &quot;Ny klassning&quot; för att börja klassificera ett system.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {assessments
-            .slice()
-            .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
-            .map((assessment) => (
-              <div
-                key={assessment.id}
-                className="flex items-center gap-4 rounded-lg border bg-white p-4 shadow-panel transition-colors hover:border-csl-primary/30"
-              >
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="truncate text-sm font-semibold text-gray-900">
-                      {assessment.systemName || 'Namnlöst system'}
-                    </h3>
-                    <span
-                      className={`shrink-0 rounded px-2 py-0.5 text-xs font-medium ${statusColor(assessment)}`}
-                    >
-                      {statusLabel(assessment)}
-                    </span>
+      {/* Klassningslista */}
+      <div className="mx-auto max-w-3xl px-6 py-8">
+        {assessments.length === 0 ? (
+          <div className="rounded-lg border-2 border-dashed border-gray-200 p-12 text-center">
+            <p className="text-lg font-medium text-gray-500">Inga klassningar ännu</p>
+            <p className="mt-2 text-sm text-gray-400">
+              Klicka &quot;Ny klassning&quot; för att börja klassificera ett system.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {assessments
+              .slice()
+              .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+              .map((assessment) => (
+                <div
+                  key={assessment.id}
+                  className="flex items-center gap-4 rounded-lg border bg-white p-4 shadow-panel transition-colors hover:border-csl-primary/30"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="truncate text-sm font-semibold text-gray-900">
+                        {assessment.systemName || 'Namnlöst system'}
+                      </h3>
+                      <span
+                        className={`shrink-0 rounded px-2 py-0.5 text-xs font-medium ${statusColor(assessment)}`}
+                      >
+                        {statusLabel(assessment)}
+                      </span>
+                    </div>
+                    <div className="mt-1 flex gap-3 text-xs text-gray-500">
+                      {assessment.facilityName && <span>{assessment.facilityName}</span>}
+                      <span>
+                        Ändrad {new Date(assessment.updatedAt).toLocaleDateString('sv-SE')}
+                      </span>
+                      <span>{assessment.answers.length} svar</span>
+                    </div>
                   </div>
-                  <div className="mt-1 flex gap-3 text-xs text-gray-500">
-                    {assessment.facilityName && <span>{assessment.facilityName}</span>}
-                    <span>Ändrad {new Date(assessment.updatedAt).toLocaleDateString('sv-SE')}</span>
-                    <span>{assessment.answers.length} svar</span>
-                  </div>
+
+                  <button
+                    onClick={() => onRemove(assessment.id)}
+                    className="shrink-0 rounded p-2 text-gray-400 hover:bg-red-50 hover:text-csl-danger"
+                    title="Ta bort"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+
+                  <button
+                    onClick={() => onSelect(assessment.id)}
+                    className="flex shrink-0 items-center gap-1 rounded bg-csl-primary/5 px-3 py-2 text-sm font-medium text-csl-primary hover:bg-csl-primary/10"
+                  >
+                    Öppna
+                    <ChevronRight size={14} />
+                  </button>
                 </div>
-
-                <button
-                  onClick={() => onRemove(assessment.id)}
-                  className="shrink-0 rounded p-2 text-gray-400 hover:bg-red-50 hover:text-csl-danger"
-                  title="Ta bort"
-                >
-                  <Trash2 size={16} />
-                </button>
-
-                <button
-                  onClick={() => onSelect(assessment.id)}
-                  className="flex shrink-0 items-center gap-1 rounded bg-csl-primary/5 px-3 py-2 text-sm font-medium text-csl-primary hover:bg-csl-primary/10"
-                >
-                  Öppna
-                  <ChevronRight size={14} />
-                </button>
-              </div>
-            ))}
-        </div>
-      )}
+              ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
