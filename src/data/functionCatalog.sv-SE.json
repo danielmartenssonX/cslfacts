@@ -1,0 +1,46 @@
+{
+  "functions": [
+    {
+      "id": "SAFETY_OPERATION",
+      "type": "SAFETY_OPERATION",
+      "title": "Säker drift",
+      "description": "Funktioner som behövs för att anläggningen ska kunna drivas säkert."
+    },
+    {
+      "id": "EMERGENCY_MANAGEMENT",
+      "type": "EMERGENCY_MANAGEMENT",
+      "title": "Nödlägeshantering",
+      "description": "Funktioner som används när en allvarlig händelse inträffar eller håller på att inträffa."
+    },
+    {
+      "id": "PHYSICAL_PROTECTION",
+      "type": "PHYSICAL_PROTECTION",
+      "title": "Fysiskt skydd",
+      "description": "Funktioner som skyddar anläggningen mot obehörigt tillträde, intrång eller sabotage."
+    },
+    {
+      "id": "MAIN_PROCESS",
+      "type": "MAIN_PROCESS",
+      "title": "Huvudprocess",
+      "description": "Funktioner som stöder den centrala anläggningsprocessen."
+    },
+    {
+      "id": "MAINTENANCE_SUPPORT",
+      "type": "MAINTENANCE_SUPPORT",
+      "title": "Drift- och underhållsstöd",
+      "description": "Funktioner som stöder drift, underhåll eller teknisk återställning."
+    },
+    {
+      "id": "SENSITIVE_INFORMATION",
+      "type": "SENSITIVE_INFORMATION",
+      "title": "Känslig information",
+      "description": "Funktioner där skyddsbehovet främst gäller att information inte sprids."
+    },
+    {
+      "id": "ADMINISTRATIVE_SUPPORT",
+      "type": "ADMINISTRATIVE_SUPPORT",
+      "title": "Administrativt stöd",
+      "description": "Funktioner som främst är stödjande och inte direkt kopplade till säker drift, skydd eller huvudprocess."
+    }
+  ]
+}

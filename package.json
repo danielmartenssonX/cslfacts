@@ -29,7 +29,8 @@
   "dependencies": {
     "lucide-react": "^0.511.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
@@ -55,6 +56,7 @@
     "prettier": "^3.5.3",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.3",
+    "typescript-eslint": "^8.58.2",
     "vite": "^6.3.5",
     "vitest": "^3.2.4"
   }

@@ -1,0 +1,539 @@
+{
+  "version": "1.0.0",
+  "language": "sv-SE",
+  "questions": [
+    {
+      "id": "Q01",
+      "section": "SCOPE",
+      "text": "Vet du vad systemet används till?",
+      "helpText": "Tänk på vad systemet faktiskt gör i vardagen. Det räcker inte med ett produktnamn eller tekniskt namn.",
+      "exampleText": "Exempel: övervakning, styrning, larm, underhåll, dokumenthantering eller passerkontroll.",
+      "answerHelp": {
+        "yes": "Användningen är tydlig.",
+        "no": "Systemet saknar tydligt syfte eller är fel beskrivet.",
+        "unclear": "Du behöver bättre systembeskrivning innan du går vidare."
+      },
+      "blocking": true,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Systemägare", "Förvaltningsledare", "Verksamhetsägare"],
+      "investigationHint": "Ta fram systembeskrivning, förvaltningsobjekt eller driftbeskrivning."
+    },
+    {
+      "id": "Q02",
+      "section": "SCOPE",
+      "text": "Vet du vad som ingår i systemet och vad som ligger utanför?",
+      "helpText": "Tänk på systemgränsen. Det ska vara tydligt vilka delar som hör till systemet.",
+      "exampleText": "Exempel: servrar, klienter, nätverk, integrationer, databaser och anslutna enheter.",
+      "answerHelp": {
+        "yes": "Systemgränsen är tydlig.",
+        "no": "Avgränsningen saknas eller är felaktig.",
+        "unclear": "Du behöver ritning eller arkitekturbild."
+      },
+      "blocking": true,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Systemägare", "Arkitekt", "Teknikansvarig"],
+      "investigationHint": "Ta fram arkitekturdiagram, nätverksbild eller systemkarta."
+    },
+    {
+      "id": "Q03",
+      "section": "SCOPE",
+      "text": "Vet du vilka andra system det här systemet är beroende av?",
+      "helpText": "Tänk på vad systemet behöver för att fungera rätt. Även stödsystem räknas.",
+      "exampleText": "Exempel: identitetstjänst, databas, tidskälla, annat styrsystem eller extern tjänst.",
+      "answerHelp": {
+        "yes": "Beroendena är kända.",
+        "no": "Det finns kända beroenden som ännu inte är beskrivna.",
+        "unclear": "Detta behöver utredas."
+      },
+      "blocking": true,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Systemägare", "Arkitekt", "Driftansvarig"],
+      "investigationHint": "Ta fram integrationslista, beroendekarta eller teknisk dokumentation."
+    },
+    {
+      "id": "Q04",
+      "section": "SCOPE",
+      "text": "Vet du vilka system som är beroende av detta system?",
+      "helpText": "Tänk på vad som kan få fel eller sluta fungera om detta system får problem.",
+      "exampleText": "Exempel: operatörsbilder, larmkedjor, rapporter eller annan styrning.",
+      "answerHelp": {
+        "yes": "Följdsystemen är kända.",
+        "no": "Man vet att följdeffekter finns men inte var.",
+        "unclear": "Det kräver mer analys av flöden och beroenden."
+      },
+      "blocking": true,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Arkitekt", "Driftansvarig", "Teknikansvarig"],
+      "investigationHint": "Ta fram dataflöden, gränssnitt och driftsamband."
+    },
+    {
+      "id": "Q05",
+      "section": "SCOPE",
+      "text": "Vet du om leverantörer eller andra utanför verksamheten kan komma åt systemet?",
+      "helpText": "Tänk på både fjärråtkomst och fysisk serviceåtkomst.",
+      "exampleText": "Exempel: support via VPN, servicedator, konsultåtkomst på plats.",
+      "answerHelp": {
+        "yes": "Det är känt om sådan åtkomst finns eller inte.",
+        "no": "Frågan är utredd och svaret är nej.",
+        "unclear": "Det är oklart om extern åtkomst förekommer."
+      },
+      "blocking": false,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Systemägare", "Leverantörsansvarig", "Driftansvarig"],
+      "investigationHint": "Fråga systemägare, driftansvarig eller leverantörsansvarig."
+    },
+    {
+      "id": "Q06",
+      "section": "SCOPE",
+      "text": "Vet du om systemet använder flyttbara medier?",
+      "helpText": "Tänk på USB, bärbara hårddiskar, serviceutrustning och temporära lagringsmedia.",
+      "exampleText": "Exempel: uppdatering via USB, logguttag eller konfigurationsfiler från bärbar dator.",
+      "answerHelp": {
+        "yes": "Det är känt om sådana medier används eller inte.",
+        "no": "Frågan är utredd och svaret är nej.",
+        "unclear": "Det kräver kontroll i drift eller underhåll."
+      },
+      "blocking": false,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Driftansvarig", "Underhållsansvarig", "Leverantör"],
+      "investigationHint": "Fråga drift, underhåll eller leverantör."
+    },
+    {
+      "id": "Q07",
+      "section": "SCOPE",
+      "text": "Vet du om systemet har en tydlig huvudfunktion eller flera olika funktioner?",
+      "helpText": "Målet är att undvika att ett och samma klassningsobjekt blandar för många olika roller.",
+      "exampleText": "Exempel: samma system kan både övervaka drift och bära känslig information.",
+      "answerHelp": {
+        "yes": "Det är tydligt om systemet har en eller flera funktioner.",
+        "no": "Systemet är fel beskrivet eller blandar roller utan ordning.",
+        "unclear": "Systemet behöver delas upp eller analyseras mer."
+      },
+      "blocking": true,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Systemägare", "Verksamhetsägare", "Arkitekt"],
+      "investigationHint": "Gör funktionsgenomgång med systemägare och verksamhetsägare."
+    },
+    {
+      "id": "Q08",
+      "section": "SCOPE",
+      "text": "Vet du om systemet kan klassificeras som ett sammanhållet system, eller om det bör delas upp?",
+      "helpText": "Ibland är det bättre att klassificera delar var för sig än att tvinga in allt i en bedömning.",
+      "exampleText": "Exempel: separat serverdel, separat operatörsdel eller separat informationsdel.",
+      "answerHelp": {
+        "yes": "Bedömningsobjektet är tydligt.",
+        "no": "Systemet är fel avgränsat.",
+        "unclear": "Det kräver omtag i scope och eventuell uppdelning."
+      },
+      "blocking": true,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Arkitekt", "Systemägare", "Säkerhetsansvarig"],
+      "investigationHint": "Ta fram logisk indelning och föreslå delsystem."
+    },
+    {
+      "id": "Q09",
+      "section": "FUNCTION",
+      "text": "Stöder systemet säker drift av anläggningen?",
+      "helpText": "Tänk på om systemet behövs för att anläggningen ska kunna drivas säkert.",
+      "exampleText": "Exempel: styrning, övervakning, viktiga driftvärden eller operatörsstöd.",
+      "answerHelp": {
+        "yes": "Systemet stöder säker drift.",
+        "no": "Systemet stöder inte säker drift.",
+        "unclear": "Du behöver fråga drift- eller processägare."
+      },
+      "blocking": false,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Driftansvarig", "Processägare", "Systemingenjör"],
+      "investigationHint": "Fråga drift- eller processägare.",
+      "createsFunctions": ["SAFETY_OPERATION"]
+    },
+    {
+      "id": "Q10",
+      "section": "FUNCTION",
+      "text": "Stöder systemet nödlägeshantering eller krishantering?",
+      "helpText": "Tänk på om systemet används när något allvarligt har hänt eller håller på att hända.",
+      "exampleText": "Exempel: larm, lägesbild, kommunikation eller beredskapsstöd.",
+      "answerHelp": {
+        "yes": "Systemet stöder nödlägeshantering.",
+        "no": "Systemet stöder inte nödlägeshantering.",
+        "unclear": "Du behöver fråga beredskapsansvarig."
+      },
+      "blocking": false,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Beredskapsansvarig", "Operativ ledning"],
+      "investigationHint": "Fråga beredskapsansvarig.",
+      "createsFunctions": ["EMERGENCY_MANAGEMENT"]
+    },
+    {
+      "id": "Q11",
+      "section": "FUNCTION",
+      "text": "Stöder systemet fysiskt skydd eller skydd mot obehörigt intrång?",
+      "helpText": "Tänk på om systemet hjälper till att skydda anläggningen mot intrång, sabotage eller obehörigt tillträde.",
+      "exampleText": "Exempel: passersystem, kameraövervakning, larm eller bevakningsstöd.",
+      "answerHelp": {
+        "yes": "Systemet stöder fysiskt skydd.",
+        "no": "Systemet stöder inte fysiskt skydd.",
+        "unclear": "Du behöver fråga fysisk skyddsansvarig."
+      },
+      "blocking": false,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Fysisk skyddsansvarig", "Säkerhetsansvarig"],
+      "investigationHint": "Fråga fysisk skyddsansvarig.",
+      "createsFunctions": ["PHYSICAL_PROTECTION"]
+    },
+    {
+      "id": "Q12",
+      "section": "FUNCTION",
+      "text": "Stöder systemet huvudprocessen eller den centrala anläggningsdriften?",
+      "helpText": "Tänk på om systemet påverkar själva kärnverksamheten, inte bara administration runt omkring.",
+      "exampleText": "Exempel: processnära övervakning, processuppföljning eller driftkritiska hjälpmedel.",
+      "answerHelp": {
+        "yes": "Systemet stöder huvudprocessen.",
+        "no": "Systemet stöder inte huvudprocessen.",
+        "unclear": "Du behöver fråga processägare eller driftspecialist."
+      },
+      "blocking": false,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Processägare", "Driftspecialist"],
+      "investigationHint": "Fråga processägare eller driftspecialist.",
+      "createsFunctions": ["MAIN_PROCESS"]
+    },
+    {
+      "id": "Q13",
+      "section": "FUNCTION",
+      "text": "Stöder systemet underhåll eller teknisk förmåga på ett sätt som är viktigt för verksamheten?",
+      "helpText": "Tänk på om problem i systemet kan försvåra underhåll, felsökning eller teknisk återställning.",
+      "exampleText": "Exempel: arbetsorder, reservdelsstyrning, tillståndsuppföljning eller teknikstöd.",
+      "answerHelp": {
+        "yes": "Systemet stöder drift eller underhåll på ett viktigt sätt.",
+        "no": "Systemet stöder inte detta på ett viktigt sätt.",
+        "unclear": "Du behöver fråga underhållsansvarig."
+      },
+      "blocking": false,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Underhållsansvarig", "Teknikansvarig"],
+      "investigationHint": "Fråga underhållsansvarig.",
+      "createsFunctions": ["MAINTENANCE_SUPPORT"]
+    },
+    {
+      "id": "Q14",
+      "section": "FUNCTION",
+      "text": "Hanterar systemet känslig information som inte får spridas?",
+      "helpText": "Tänk på om det viktigaste skyddsbehovet gäller att informationen hålls hemlig.",
+      "exampleText": "Exempel: skyddsritningar, skyddsupplägg, känsliga instruktioner eller känslig planering.",
+      "answerHelp": {
+        "yes": "Systemet hanterar känslig information.",
+        "no": "Systemet hanterar inte sådan information.",
+        "unclear": "Du behöver fråga informationsägare eller säkerhetsansvarig."
+      },
+      "blocking": false,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Informationsägare", "Säkerhetsansvarig"],
+      "investigationHint": "Fråga informationsägare eller säkerhetsansvarig.",
+      "createsFunctions": ["SENSITIVE_INFORMATION"]
+    },
+    {
+      "id": "Q15",
+      "section": "FUNCTION",
+      "text": "Är systemet i huvudsak administrativt eller stödjande utan direkt koppling till säker drift, skydd eller huvudprocess?",
+      "helpText": "Den här frågan hjälper verktyget att skilja kärnfunktioner från rena stödfunktioner.",
+      "exampleText": "Exempel: enklare planeringsstöd, kontorsnära system eller generella stödtjänster.",
+      "answerHelp": {
+        "yes": "Systemet är främst administrativt eller stödjande.",
+        "no": "Systemet är inte främst administrativt eller stödjande.",
+        "unclear": "Du behöver tydligare verksamhetsbeskrivning."
+      },
+      "blocking": false,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Verksamhetsägare", "Systemägare"],
+      "investigationHint": "Kräv tydligare verksamhetsbeskrivning.",
+      "createsFunctions": ["ADMINISTRATIVE_SUPPORT"]
+    },
+    {
+      "id": "Q16",
+      "section": "CONSEQUENCE",
+      "text": "Kan fel i systemet bidra till att människor utanför anläggningen kan påverkas av en radiologisk händelse?",
+      "helpText": "Tänk på om fel, bortfall eller manipulation i systemet kan bidra till ett mycket allvarligt förlopp.",
+      "exampleText": "Exempel: system med avgörande betydelse för att förebygga eller hantera mycket allvarliga händelser.",
+      "answerHelp": {
+        "yes": "Systemet kan ha sådan betydelse.",
+        "no": "Systemet har inte sådan betydelse.",
+        "unclear": "Detta måste utredas särskilt noggrant."
+      },
+      "blocking": true,
+      "appliesTo": ["SAFETY_OPERATION", "MAIN_PROCESS", "EMERGENCY_MANAGEMENT", "OTHER"],
+      "whoCanAnswer": ["Säkerhetsanalytiker", "Processägare", "I&C-specialist"],
+      "investigationHint": "Ta in bedömning från säkerhetsanalys, processägare eller I&C-specialist.",
+      "candidateLevel": "CSL1"
+    },
+    {
+      "id": "Q17",
+      "section": "CONSEQUENCE",
+      "text": "Kan fel i systemet försämra säkerheten i anläggningen under normal drift?",
+      "helpText": "Tänk på om anläggningen blir mindre säker att köra om systemet visar fel, slutar fungera eller manipuleras.",
+      "exampleText": "Exempel: viktiga driftvärden, övervakning, operatörsstöd eller styrsignaler.",
+      "answerHelp": {
+        "yes": "Systemet kan påverka säker drift.",
+        "no": "Systemet påverkar inte säker drift på det sättet.",
+        "unclear": "Du behöver fråga driftansvarig, systemingenjör eller I&C-specialist."
+      },
+      "blocking": true,
+      "appliesTo": ["SAFETY_OPERATION", "MAIN_PROCESS"],
+      "whoCanAnswer": ["Driftansvarig", "Systemingenjör", "I&C-specialist"],
+      "investigationHint": "Fråga driftansvarig, systemingenjör eller I&C-specialist.",
+      "candidateLevel": "CSL2"
+    },
+    {
+      "id": "Q18",
+      "section": "CONSEQUENCE",
+      "text": "Kan fel i systemet göra det svårare att hantera en nödsituation?",
+      "helpText": "Tänk på om systemet behövs när ett allvarligt läge uppstår.",
+      "exampleText": "Exempel: larm, lägesbild, kommunikationsstöd eller beslutsstöd i beredskap.",
+      "answerHelp": {
+        "yes": "Systemet kan försvåra nödlägeshantering om det fallerar.",
+        "no": "Systemet påverkar inte nödlägeshanteringen på det sättet.",
+        "unclear": "Du behöver fråga beredskapsansvarig eller operativ ledning."
+      },
+      "blocking": true,
+      "appliesTo": ["EMERGENCY_MANAGEMENT"],
+      "whoCanAnswer": ["Beredskapsansvarig", "Operativ ledning"],
+      "investigationHint": "Fråga beredskapsansvarig eller operativ ledning.",
+      "candidateLevel": "CSL2"
+    },
+    {
+      "id": "Q19",
+      "section": "CONSEQUENCE",
+      "text": "Kan fel i systemet försämra anläggningens fysiska skydd?",
+      "helpText": "Tänk på om obehöriga lättare skulle kunna ta sig in, röra sig fel eller genomföra sabotage.",
+      "exampleText": "Exempel: passage, larm, kamera, områdesskydd eller bevakningsstöd.",
+      "answerHelp": {
+        "yes": "Systemet kan påverka fysiskt skydd.",
+        "no": "Systemet påverkar inte fysiskt skydd på det sättet.",
+        "unclear": "Du behöver fråga fysisk skyddsansvarig."
+      },
+      "blocking": true,
+      "appliesTo": ["PHYSICAL_PROTECTION"],
+      "whoCanAnswer": ["Fysisk skyddsansvarig", "Säkerhetsansvarig"],
+      "investigationHint": "Fråga fysisk skyddsansvarig.",
+      "candidateLevel": "CSL2"
+    },
+    {
+      "id": "Q20",
+      "section": "CONSEQUENCE",
+      "text": "Kan fel i systemet störa anläggningens huvudprocess på ett allvarligt sätt?",
+      "helpText": "Tänk på den centrala processen i anläggningen, inte bara besvär eller merarbete.",
+      "exampleText": "Exempel: processövervakning, processuppföljning eller driftkritisk koordinering.",
+      "answerHelp": {
+        "yes": "Systemet kan störa huvudprocessen allvarligt.",
+        "no": "Systemet påverkar inte huvudprocessen på det sättet.",
+        "unclear": "Du behöver fråga processägare eller driftspecialist."
+      },
+      "blocking": true,
+      "appliesTo": ["MAIN_PROCESS", "SAFETY_OPERATION"],
+      "whoCanAnswer": ["Processägare", "Driftspecialist"],
+      "investigationHint": "Fråga processägare eller driftspecialist.",
+      "candidateLevel": "CSL2"
+    },
+    {
+      "id": "Q21",
+      "section": "CONSEQUENCE",
+      "text": "Kan fel i systemet ge stora problem i drift eller underhåll även om säkerheten inte direkt påverkas?",
+      "helpText": "Tänk på tydliga verksamhetseffekter som inte gäller säkerhet eller fysiskt skydd men ändå är stora.",
+      "exampleText": "Exempel: svårigheter att underhålla anläggningen, långa driftstörningar eller stor operativ påverkan.",
+      "answerHelp": {
+        "yes": "Systemet kan ge stora operativa eller underhållsmässiga problem.",
+        "no": "Systemet ger inte sådan påverkan.",
+        "unclear": "Du behöver fråga underhållsansvarig eller driftsamordning."
+      },
+      "blocking": false,
+      "appliesTo": ["MAINTENANCE_SUPPORT", "MAIN_PROCESS", "ADMINISTRATIVE_SUPPORT"],
+      "whoCanAnswer": ["Underhållsansvarig", "Driftsamordning", "Teknikansvarig"],
+      "investigationHint": "Fråga underhållsansvarig eller driftsamordning.",
+      "candidateLevel": "CSL3"
+    },
+    {
+      "id": "Q22",
+      "section": "CONSEQUENCE",
+      "text": "Kan fel i systemet få tydlig negativ effekt på elproduktion eller anläggningens prestation?",
+      "helpText": "Tänk på om bortfall eller manipulation kan påverka produktionen eller den operativa förmågan märkbart.",
+      "exampleText": "Exempel: system där bortfall ger tydlig påverkan på kraftproduktion eller tillgänglighet.",
+      "answerHelp": {
+        "yes": "Systemet kan ge tydlig negativ effekt.",
+        "no": "Systemet ger inte sådan effekt.",
+        "unclear": "Du behöver fråga produktion, drift eller teknikstöd."
+      },
+      "blocking": false,
+      "appliesTo": ["MAIN_PROCESS", "MAINTENANCE_SUPPORT"],
+      "whoCanAnswer": ["Produktion", "Driftansvarig", "Teknikstöd"],
+      "investigationHint": "Fråga produktion, drift eller teknikstöd.",
+      "candidateLevel": "CSL3"
+    },
+    {
+      "id": "Q23",
+      "section": "CONSEQUENCE",
+      "text": "Skulle fel i systemet främst ge problem först längre fram, snarare än direkt?",
+      "helpText": "Tänk på sådant som inte märks direkt men som över tid kan ge tydliga följder.",
+      "exampleText": "Exempel: gradvis sämre planering, förlorad historik, uppbyggda fel eller försämrad uppföljning.",
+      "answerHelp": {
+        "yes": "Systemet kan ge långsiktig negativ effekt.",
+        "no": "Systemet ger inte främst långsiktig effekt.",
+        "unclear": "Du behöver fråga verksamhetsägare eller systemägare."
+      },
+      "blocking": false,
+      "appliesTo": [
+        "ADMINISTRATIVE_SUPPORT",
+        "SENSITIVE_INFORMATION",
+        "MAINTENANCE_SUPPORT",
+        "OTHER"
+      ],
+      "whoCanAnswer": ["Verksamhetsägare", "Systemägare"],
+      "investigationHint": "Fråga verksamhetsägare eller systemägare.",
+      "candidateLevel": "CSL4"
+    },
+    {
+      "id": "Q24",
+      "section": "CONSEQUENCE",
+      "text": "Skulle ett fel i systemet i praktiken inte påverka säkerhet, tillgänglighet eller anläggningens prestation?",
+      "helpText": "Svara bara ja om påverkan verkligen är liten eller obefintlig.",
+      "exampleText": "Exempel: stödfunktioner utan betydelse för säker drift, skydd eller anläggningsprestanda.",
+      "answerHelp": {
+        "yes": "Systemet har i praktiken ingen relevant påverkan.",
+        "no": "Systemet har ändå någon relevant påverkan.",
+        "unclear": "Du behöver tydligare beskriva konsekvenskedjan."
+      },
+      "blocking": false,
+      "appliesTo": ["ADMINISTRATIVE_SUPPORT", "OTHER"],
+      "whoCanAnswer": ["Verksamhetsägare", "Systemägare"],
+      "investigationHint": "Kräv tydligare beskrivning av konsekvenskedja.",
+      "candidateLevel": "CSL5"
+    },
+    {
+      "id": "Q25",
+      "section": "CONTEXT",
+      "text": "Är det viktigaste skyddsbehovet att informationen hålls hemlig?",
+      "helpText": "Den här frågan används främst för informationssystem där det viktigaste är att information inte sprids.",
+      "exampleText": "Exempel: ritningar, skyddsdetaljer, känslig planering eller skyddsinstruktioner.",
+      "answerHelp": {
+        "yes": "Huvudskyddsbehovet gäller hemlighållande.",
+        "no": "Det viktigaste gäller något annat.",
+        "unclear": "Du behöver fråga informationsägare."
+      },
+      "blocking": false,
+      "appliesTo": ["SENSITIVE_INFORMATION"],
+      "whoCanAnswer": ["Informationsägare", "Säkerhetsansvarig"],
+      "investigationHint": "Fråga informationsägare."
+    },
+    {
+      "id": "Q26",
+      "section": "CONTEXT",
+      "text": "Är det viktigaste skyddsbehovet att informationen är korrekt och går att lita på?",
+      "helpText": "Tänk på om felaktig information kan leda till fel beslut eller fel driftåtgärder.",
+      "exampleText": "Exempel: processvärden, statusinformation eller larmindikeringar.",
+      "answerHelp": {
+        "yes": "Korrekthet är särskilt viktig.",
+        "no": "Korrekthet är inte det viktigaste skyddsbehovet.",
+        "unclear": "Du behöver fråga drift eller systemingenjör."
+      },
+      "blocking": false,
+      "appliesTo": ["SAFETY_OPERATION", "MAIN_PROCESS", "EMERGENCY_MANAGEMENT", "OTHER"],
+      "whoCanAnswer": ["Driftansvarig", "Systemingenjör"],
+      "investigationHint": "Fråga drift eller systemingenjör."
+    },
+    {
+      "id": "Q27",
+      "section": "CONTEXT",
+      "text": "Är det viktigt att systemet finns tillgängligt när det behövs?",
+      "helpText": "Tänk på om bortfall i rätt ögonblick skulle få tydliga följder.",
+      "exampleText": "Exempel: larm, övervakning, stöd vid händelse eller processnära stöd.",
+      "answerHelp": {
+        "yes": "Tillgänglighet är särskilt viktig.",
+        "no": "Tillgänglighet är inte avgörande på det sättet.",
+        "unclear": "Du behöver utreda driftsberoende och användningsmönster."
+      },
+      "blocking": false,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Driftansvarig", "Verksamhetsägare"],
+      "investigationHint": "Utred driftsberoende och användningsmönster."
+    },
+    {
+      "id": "Q28",
+      "section": "CONTEXT",
+      "text": "Går det att klara funktionen på ett säkert och fungerande sätt utan detta system under en tid?",
+      "helpText": "Tänk på verkliga alternativ, inte teoretiska. Ett reservsätt måste fungera i praktiken.",
+      "exampleText": "Exempel: manuell hantering, analog reserv eller annan etablerad rutin.",
+      "answerHelp": {
+        "yes": "Det finns ett verkligt fungerande alternativ under en tid.",
+        "no": "Funktionen går inte att klara på ett säkert och fungerande sätt utan systemet.",
+        "unclear": "Du behöver fråga verksamhetsägare och kontrollera verkligt arbetssätt."
+      },
+      "blocking": false,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Verksamhetsägare", "Driftansvarig", "Processägare"],
+      "investigationHint": "Fråga verksamhetsägare och kontrollera faktiskt arbetssätt."
+    },
+    {
+      "id": "Q29",
+      "section": "CONTEXT",
+      "text": "Finns det ett annat system som faktiskt kan ta över samma uppgift?",
+      "helpText": "Det ska finnas ett verkligt alternativ, inte bara en plan eller en förhoppning.",
+      "exampleText": "Exempel: redundant eller divers lösning som är i bruk.",
+      "answerHelp": {
+        "yes": "Det finns ett verkligt alternativ som kan ta över.",
+        "no": "Det finns inget verkligt alternativ.",
+        "unclear": "Du behöver fråga teknikansvarig eller systemingenjör."
+      },
+      "blocking": false,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Teknikansvarig", "Systemingenjör"],
+      "investigationHint": "Fråga teknikansvarig eller systemingenjör."
+    },
+    {
+      "id": "Q30",
+      "section": "CONTEXT",
+      "text": "Är detta det primära systemet för den aktuella funktionen?",
+      "helpText": "Om flera digitala tillgångar stöder samma funktion måste ett primärt system ofta pekas ut i klassningen.",
+      "exampleText": "Exempel: två olika system stöder samma funktion men ett är huvudbärare.",
+      "answerHelp": {
+        "yes": "Detta är det primära systemet för funktionen.",
+        "no": "Ett annat system är primärt.",
+        "unclear": "Du behöver göra en tydligare funktionskartläggning."
+      },
+      "blocking": true,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Systemägare", "Arkitekt", "Teknikansvarig"],
+      "investigationHint": "Kräv funktionskartläggning och beslut om primärt system."
+    },
+    {
+      "id": "Q31",
+      "section": "CONTEXT",
+      "text": "Är systemet så sammanblandat med andra funktioner att det är svårt att avgöra vad som egentligen ska klassificeras?",
+      "helpText": "Den här frågan fångar när scope är för grovt. Då bör systemet delas upp innan klassning låses.",
+      "exampleText": "Exempel: gemensam plattform som bär både känslig information och driftstöd.",
+      "answerHelp": {
+        "yes": "Systemet behöver sannolikt delas upp eller omdefinieras.",
+        "no": "Scope är tillräckligt tydligt.",
+        "unclear": "Du behöver omtag i avgränsning och eventuellt delsystem."
+      },
+      "blocking": true,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Arkitekt", "Systemägare", "Säkerhetsansvarig"],
+      "investigationHint": "Kräv omtag i avgränsning och uppdelning i delsystem eller funktionsspår."
+    },
+    {
+      "id": "Q32",
+      "section": "CONTEXT",
+      "text": "Finns det någon tydlig anledning att tro att systemet bör klassas högre än den preliminära regeln visar?",
+      "helpText": "Den här kontrollfrågan fångar sådant som inte syns fullt ut i standardsvaren.",
+      "exampleText": "Exempel: särskilt kritisk roll i skydd, särskild beroendekedja eller ovanlig konsekvensbild.",
+      "answerHelp": {
+        "yes": "Systemet bör granskas manuellt innan klassning låses.",
+        "no": "Det finns ingen sådan tydlig anledning just nu.",
+        "unclear": "Flagga för specialistgranskning."
+      },
+      "blocking": false,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Säkerhetsansvarig", "Systemägare", "Specialistgranskare"],
+      "investigationHint": "Flagga för specialistgranskning."
+    }
+  ]
+}

@@ -3,14 +3,16 @@ import globals from 'globals';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
+import tseslint from 'typescript-eslint';
 
 export default [
   {
     ignores: ['dist/**', 'coverage/**', 'playwright-report/**', 'test-results/**'],
   },
   js.configs.recommended,
+  ...tseslint.configs.recommended,
   {
-    files: ['**/*.{js,jsx,mjs}'],
+    files: ['**/*.{js,jsx,mjs,ts,tsx}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -34,7 +36,9 @@ export default [
     },
     rules: {
       'no-console': ['error', { allow: ['warn', 'error'] }],
-      'no-unused-vars': ['error', { varsIgnorePattern: '^React$' }],
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': ['error', { varsIgnorePattern: '^React$|^_' }],
+      '@typescript-eslint/no-explicit-any': 'off',
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       'react/jsx-no-target-blank': 'error',
@@ -52,7 +56,7 @@ export default [
     },
   },
   {
-    files: ['tests/**/*.{js,jsx}'],
+    files: ['tests/**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
       globals: {
         describe: 'readonly',
