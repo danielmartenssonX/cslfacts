@@ -211,7 +211,7 @@ function Step0SystemInfo({
               })
             }
             className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-csl-primary focus:outline-none focus:ring-1 focus:ring-csl-primary"
-            placeholder="t.ex. Forsmark 1"
+            placeholder="t.ex. Norrström K1"
           />
         </div>
         <div>
