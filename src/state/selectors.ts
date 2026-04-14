@@ -52,9 +52,11 @@ export function isStepComplete(
       return getAnsweredCount(state, 'FUNCTION', questions) > 0;
     case 3: // Konsekvensfrågor
       return getAnsweredCount(state, 'CONSEQUENCE', questions) > 0;
-    case 4: // Oklarheter
+    case 4: // Kontext och komplettering
+      return getAnsweredCount(state, 'CONTEXT', questions) > 0;
+    case 5: // Oklarheter
       return true; // Alltid tillgängligt
-    case 5: // Resultat
+    case 6: // Resultat
       return state.result !== null;
     default:
       return false;

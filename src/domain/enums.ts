@@ -34,6 +34,7 @@ export const STEP_LABELS = [
   'Avgränsning och beroenden',
   'Funktioner',
   'Konsekvensfrågor',
+  'Kontext och komplettering',
   'Oklarheter',
   'Resultat',
 ] as const;

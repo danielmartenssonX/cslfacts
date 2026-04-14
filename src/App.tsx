@@ -429,7 +429,7 @@ function WizardView({
   calculateResult: (questions: Question[]) => void;
 }) {
   const completedSteps = useMemo(
-    () => Array.from({ length: 6 }, (_, i) => isStepComplete(state, i, allQuestions)),
+    () => Array.from({ length: 7 }, (_, i) => isStepComplete(state, i, allQuestions)),
     [state],
   );
 
@@ -444,14 +444,15 @@ function WizardView({
     };
   }, [state.result]);
 
-  const canGoNext = state.currentStep < 5;
+  const canGoNext = state.currentStep < 6;
   const canGoPrev = state.currentStep > 0;
 
   const handleNext = () => {
-    if (state.currentStep === 4) {
+    if (state.currentStep === 5) {
+      // Beräkna resultat automatiskt vid övergång till resultatsteget
       calculateResult(allQuestions);
     }
-    setStep(Math.min(state.currentStep + 1, 5));
+    setStep(Math.min(state.currentStep + 1, 6));
   };
 
   const handlePrev = () => setStep(Math.max(state.currentStep - 1, 0));
@@ -491,8 +492,18 @@ function WizardView({
           />
         );
       case 4:
-        return <Step4Investigations state={state} />;
+        return (
+          <QuestionSection
+            section="CONTEXT"
+            state={state}
+            setAnswer={setAnswer}
+            subtitle="Kompletterande frågor om skyddsbehov, tillgänglighet och systemavgränsning."
+            step={4}
+          />
+        );
       case 5:
+        return <Step4Investigations state={state} />;
+      case 6:
         return (
           <Step5Results
             state={state}
