@@ -1,6 +1,7 @@
-import { useMemo } from 'react';
-import { Plus, Trash2, ChevronRight, ArrowLeft } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Plus, Trash2, ChevronRight, ArrowLeft, Info } from 'lucide-react';
 import ManualReviewBanner from './components/results/ManualReviewBanner';
+import ClassificationInfoView from './components/info/ClassificationInfoView';
 import { writeConciseSummary, writeDetailedSummary } from './services/summaryWriter';
 import WizardShell from './components/wizard/WizardShell';
 import StepHeader from './components/wizard/StepHeader';
@@ -51,11 +52,13 @@ function AssessmentListView({
   onCreate,
   onSelect,
   onRemove,
+  onShowInfo,
 }: {
   assessments: SystemAssessment[];
   onCreate: () => void;
   onSelect: (id: string) => void;
   onRemove: (id: string) => void;
+  onShowInfo: () => void;
 }) {
   return (
     <div className="mx-auto max-w-3xl px-6 py-10">
@@ -66,13 +69,22 @@ function AssessmentListView({
             Klassificering av digitala tillgångar enligt IAEA NSS 17-T (Rev. 1)
           </p>
         </div>
-        <button
-          onClick={onCreate}
-          className="flex items-center gap-2 rounded bg-csl-primary px-4 py-2.5 text-sm font-medium text-white hover:opacity-90"
-        >
-          <Plus size={16} />
-          Ny klassning
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onShowInfo}
+            className="flex items-center gap-1.5 rounded border border-gray-300 px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            <Info size={16} />
+            Om klassningen
+          </button>
+          <button
+            onClick={onCreate}
+            className="flex items-center gap-2 rounded bg-csl-primary px-4 py-2.5 text-sm font-medium text-white hover:opacity-90"
+          >
+            <Plus size={16} />
+            Ny klassning
+          </button>
+        </div>
       </div>
 
       {assessments.length === 0 ? (
@@ -380,6 +392,7 @@ function Step5Results({
 function WizardView({
   state,
   backToList,
+  onShowInfo,
   setSystemInfo,
   setAnswer,
   setStep,
@@ -387,6 +400,7 @@ function WizardView({
 }: {
   state: SystemAssessment;
   backToList: () => void;
+  onShowInfo: () => void;
   setSystemInfo: (info: {
     systemName: string;
     systemDescription: string;
@@ -489,6 +503,13 @@ function WizardView({
           <ArrowLeft size={14} />
           Alla klassningar
         </button>
+        <button
+          onClick={onShowInfo}
+          className="flex w-full items-center gap-1 rounded px-2 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50"
+        >
+          <Info size={14} />
+          Om klassningen
+        </button>
         <KnownFactsPanel state={state} questions={allQuestions} />
         <InvestigationPanel items={investigationItems} />
         <ManualReviewBanner visible={enrichedResult?.manualReviewRequired ?? false} />
@@ -515,6 +536,11 @@ function WizardView({
 
 export default function App() {
   const store = useAssessmentStore();
+  const [showInfo, setShowInfo] = useState(false);
+
+  if (showInfo) {
+    return <ClassificationInfoView onBack={() => setShowInfo(false)} />;
+  }
 
   if (!store.activeAssessment) {
     return (
@@ -523,6 +549,7 @@ export default function App() {
         onCreate={store.create}
         onSelect={store.select}
         onRemove={store.remove}
+        onShowInfo={() => setShowInfo(true)}
       />
     );
   }
@@ -531,6 +558,7 @@ export default function App() {
     <WizardView
       state={store.activeAssessment}
       backToList={store.backToList}
+      onShowInfo={() => setShowInfo(true)}
       setSystemInfo={store.setSystemInfo}
       setAnswer={store.setAnswer}
       setStep={store.setStep}
