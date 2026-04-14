@@ -6,6 +6,7 @@ import {
   BookOpen,
   Scale,
   Users,
+  Info,
 } from 'lucide-react';
 import DecisionFlowDiagram from './DecisionFlowDiagram';
 
@@ -37,19 +38,42 @@ export default function ClassificationInfoView({ onBack }: ClassificationInfoVie
           <SectionHeader icon={<BookOpen size={20} />} title="Översikt" />
           <div className="prose-sm space-y-3 text-sm text-gray-700">
             <p>
-              Verktyget bygger på <strong>IAEA Nuclear Security Series No. 17-T (Rev. 1)</strong>,
-              med fokus på Annex II:s exempel för kärnkraftverk. Klassningen avgör vilken skyddsnivå
-              (Computer Security Level, CSL) ett digitalt system ska ha.
+              Verktyget operationaliserar{' '}
+              <strong>IAEA Nuclear Security Series No. 17-T (Rev. 1)</strong>, särskilt Annex II:s
+              exempel för tilldelning av Computer Security Levels (CSL) i kärnkraftverk.
+              Frågestrukturen i verktyget är en deterministisk tolkning av dessa principer — inte
+              ett frågebatteri som ges direkt av IAEA.
             </p>
             <p>
-              Klassningen är <strong>helt deterministisk</strong>. Det finns inga dolda
-              poängmodeller, ingen AI-baserad slutledning och inga sannolikhetsbedömningar. Varje
-              utfall kan spåras tillbaka till exakt vilka svar som gav vilken nivå.
+              Klassningen utgår från vilka <strong>funktioner</strong> ett system stöder och från de
+              möjliga konsekvenserna om systemets <strong>integritet eller tillgänglighet</strong>{' '}
+              komprometteras. Det finns inga dolda poängmodeller, ingen AI-baserad slutledning och
+              inga sannolikhetsbedömningar. Varje utfall kan spåras tillbaka till exakt vilka svar
+              som gav vilken nivå.
             </p>
             <p>
-              Grundprincipen är <strong>funktion först</strong>: klassificeringen utgår från vilka
-              funktioner systemet stöder, inte från teknisk implementation.
+              Grundprincipen är <strong>funktion först</strong>: i IAEA:s modell identifieras först
+              anläggningens funktioner, dessa tilldelas system, och systemen ärver den skyddsnivå
+              som funktionen kräver. Verktyget stödjer klassning av{' '}
+              <strong>system utifrån de funktioner de utför</strong>.
             </p>
+          </div>
+
+          {/* Informationsruta: Säkerhetsklass ≠ CSL */}
+          <div className="mt-4 flex items-start gap-3 rounded-lg border border-csl-info/30 bg-csl-info/5 p-4">
+            <Info size={18} className="mt-0.5 shrink-0 text-csl-info" />
+            <div className="text-sm text-gray-700">
+              <p className="font-semibold text-gray-900">
+                Säkerhetsklass och CSL är inte samma sak
+              </p>
+              <p className="mt-1">
+                Det finns ingen automatisk 1:1-koppling mellan säkerhetsklass och Computer Security
+                Level. Ett system utan formell säkerhetsklass kan ändå kräva en stringent CSL om det
+                har stor betydelse för säkerhet eller fysiskt skydd. Omvänt behöver ett system med
+                hög säkerhetsklass inte nödvändigtvis ha högsta CSL om det inte har digitala
+                beroenden som kan komprometteras.
+              </p>
+            </div>
           </div>
         </section>
 
@@ -80,31 +104,31 @@ export default function ClassificationInfoView({ onBack }: ClassificationInfoVie
                 <CslRow
                   level="CSL 1"
                   color="bg-red-100 text-red-800"
-                  description="Högsta skyddsnivå. Systemet kan bidra till att människor utanför anläggningen påverkas av en radiologisk händelse."
+                  description="Högsta skyddsnivå. Komprometterad integritet eller tillgänglighet kan leda till radiologiska konsekvenser utanför anläggningen."
                   questions="Q16"
                 />
                 <CslRow
                   level="CSL 2"
                   color="bg-orange-100 text-orange-800"
-                  description="Hög skyddsnivå. Systemet kan försämra säkerhet under normal drift, försvåra nödlägeshantering, försämra fysiskt skydd eller störa huvudprocessen allvarligt."
+                  description="Hög skyddsnivå. Komprometterad integritet eller tillgänglighet kan försämra säkerhet under normal drift, försvåra nödlägeshantering, försämra fysiskt skydd eller allvarligt störa huvudprocessen."
                   questions="Q17, Q18, Q19, Q20"
                 />
                 <CslRow
                   level="CSL 3"
                   color="bg-yellow-100 text-yellow-800"
-                  description="Medelhög skyddsnivå. Systemet kan ge stora drift- eller underhållsproblem, eller tydlig negativ effekt på prestanda."
+                  description="Medelhög skyddsnivå. Komprometterad integritet eller tillgänglighet kan ge stora drift- eller underhållsproblem, eller tydlig negativ effekt på anläggningens prestanda."
                   questions="Q21, Q22"
                 />
                 <CslRow
                   level="CSL 4"
                   color="bg-blue-100 text-blue-800"
-                  description="Grundskyddsnivå. Systemet kan ge långsiktig negativ effekt som inte märks direkt."
+                  description="Grundskyddsnivå. Komprometterad integritet eller tillgänglighet kan ge negativa effekter som inte märks direkt men som över tid påverkar verksamheten."
                   questions="Q23"
                 />
                 <CslRow
                   level="CSL 5"
                   color="bg-green-100 text-green-800"
-                  description="Lägsta skyddsnivå. Systemet har i praktiken ingen relevant påverkan på säkerhet, tillgänglighet eller prestanda."
+                  description="Lägsta skyddsnivå. Komprometterad integritet eller tillgänglighet bedöms inte kunna påverka säkerhet, tillgänglighet eller anläggningens prestanda."
                   questions="Q24"
                 />
               </tbody>
@@ -147,7 +171,7 @@ export default function ClassificationInfoView({ onBack }: ClassificationInfoVie
             />
             <FunctionCard
               title="Känslig information"
-              description="Funktioner där skyddsbehovet främst gäller att information inte sprids."
+              description="Funktioner där skyddsbehovet främst gäller att information inte sprids. Informationsskyddsaspekterna bygger på övriga delar av 17-T, inte enbart Annex II:s nivåtrappa som främst fokuserar på integritet och tillgänglighet."
               question="Q14"
             />
             <FunctionCard
@@ -169,7 +193,7 @@ export default function ClassificationInfoView({ onBack }: ClassificationInfoVie
             </p>
             <div className="rounded-lg border bg-gray-50 p-4">
               <p className="mb-2 text-xs font-semibold uppercase text-gray-500">
-                Blockerande frågor
+                Blockerande frågor härledda ur IAEA-modellen
               </p>
               <div className="grid gap-x-6 gap-y-1 sm:grid-cols-2">
                 <BlockingItem id="Q01" text="Vad systemet används till" />
@@ -184,7 +208,19 @@ export default function ClassificationInfoView({ onBack }: ClassificationInfoVie
                 <BlockingItem id="Q19" text="Fysiskt skydd" />
                 <BlockingItem id="Q20" text="Huvudprocess allvarligt" />
                 <BlockingItem id="Q30" text="Primärt system" />
+              </div>
+            </div>
+            <div className="rounded-lg border bg-gray-50 p-4">
+              <p className="mb-2 text-xs font-semibold uppercase text-gray-500">
+                Verktygsspecifika kontroller
+              </p>
+              <p className="mb-2 text-xs text-gray-500">
+                Dessa blockeringar är tillagda i verktyget för att fånga scope-problem och
+                uppklassningsbehov — de härleds inte direkt ur Annex II.
+              </p>
+              <div className="grid gap-x-6 gap-y-1 sm:grid-cols-2">
                 <BlockingItem id="Q31" text="Scope-sammanblandning" />
+                <BlockingItem id="Q32" text="Möjlig uppklassning (flaggar manuell granskning)" />
               </div>
             </div>
           </div>
@@ -199,8 +235,8 @@ export default function ClassificationInfoView({ onBack }: ClassificationInfoVie
               description="Om ett system stöder flera funktioner och dessa ger olika CSL-nivåer, blir systemnivån den mest stringenta (lägsta siffran). Exempel: om en funktion ger CSL 2 och en annan CSL 4, blir systemnivån CSL 2."
             />
             <RuleCard
-              title="Analog fallback sänker aldrig automatiskt"
-              description="Om användaren anger att en funktion kan upprätthållas manuellt eller analogt (Q28), noteras detta men nivån sänks aldrig automatiskt. Lägre nivå kräver explicit manuell motivering."
+              title="Analog fallback sänker aldrig automatiskt (verktygsregel)"
+              description="Om en funktion delvis kan upprätthållas manuellt eller analogt kan detta i vissa fall tala för en mindre stringent nivå enligt IAEA. I detta verktyg sänks nivån dock aldrig automatiskt på den grunden. En eventuell sänkning kräver uttrycklig manuell motivering och granskning."
             />
             <RuleCard
               title="Manuell granskning (Q32)"
