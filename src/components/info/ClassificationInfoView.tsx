@@ -67,11 +67,20 @@ export default function ClassificationInfoView({ onBack }: ClassificationInfoVie
                 Säkerhetsklass och CSL är inte samma sak
               </p>
               <p className="mt-1">
-                Det finns ingen automatisk 1:1-koppling mellan säkerhetsklass och Computer Security
-                Level. Ett system utan formell säkerhetsklass kan ändå kräva en stringent CSL om det
-                har stor betydelse för säkerhet eller fysiskt skydd. Omvänt behöver ett system med
-                hög säkerhetsklass inte nödvändigtvis ha högsta CSL om det inte har digitala
-                beroenden som kan komprometteras.
+                <strong>Säkerhetsklass</strong> (safety class) anger hur viktig en komponents
+                funktion är för den nukleära säkerheten — den styrs av deterministisk
+                säkerhetsanalys och regleras i nationella föreskrifter (t.ex. SSMFS).{' '}
+                <strong>CSL</strong> (Computer Security Level) anger vilken nivå av{' '}
+                <em>datasäkerhetsskydd</em> ett digitalt system behöver — den styrs av vilka
+                konsekvenser som uppstår om systemets integritet eller tillgänglighet
+                komprometteras.
+              </p>
+              <p className="mt-2">
+                Det finns ingen automatisk 1:1-koppling mellan de två. Ett system utan formell
+                säkerhetsklass kan ändå kräva en stringent CSL om det har stor betydelse för fysiskt
+                skydd, nödlägeshantering eller känslig information. Omvänt behöver ett system med
+                hög säkerhetsklass inte nödvändigtvis ha högsta CSL om det saknar digitala beroenden
+                som kan komprometteras utifrån.
               </p>
             </div>
           </div>
