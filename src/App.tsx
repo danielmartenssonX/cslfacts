@@ -1,4 +1,6 @@
 import { useMemo } from 'react';
+import ManualReviewBanner from './components/results/ManualReviewBanner';
+import { writeConciseSummary, writeDetailedSummary } from './services/summaryWriter';
 import WizardShell from './components/wizard/WizardShell';
 import StepHeader from './components/wizard/StepHeader';
 import QuestionCard from './components/questions/QuestionCard';
@@ -217,14 +219,14 @@ function Step4Investigations({ state }: { state: ReturnType<typeof useAssessment
 
 function Step5Results({
   state,
+  enrichedResult,
   calculateResult,
 }: {
   state: ReturnType<typeof useAssessmentStore>['state'];
+  enrichedResult: import('./domain/types').ClassificationResult | null;
   calculateResult: ReturnType<typeof useAssessmentStore>['calculateResult'];
 }) {
-  const needsCalculation = !state.result;
-
-  if (needsCalculation) {
+  if (!enrichedResult) {
     return (
       <div>
         <StepHeader step={5} subtitle="Beräkna klassificeringsresultatet." />
@@ -242,7 +244,7 @@ function Step5Results({
     <div>
       <StepHeader step={5} subtitle="Resultat och motivering." />
       <ResultSummary
-        result={state.result!}
+        result={enrichedResult}
         questions={allQuestions}
         onExportJson={() => downloadJson(state)}
         onExportMarkdown={() => downloadMarkdown(state)}
@@ -263,6 +265,16 @@ export default function App() {
   );
 
   const investigationItems = useMemo(() => getInvestigationItems(state, allQuestions), [state]);
+
+  // Berika resultatet med dynamisk motiveringstext
+  const enrichedResult = useMemo(() => {
+    if (!state.result) return null;
+    return {
+      ...state.result,
+      conciseRationale: writeConciseSummary(state.result),
+      detailedRationale: writeDetailedSummary(state.result),
+    };
+  }, [state.result]);
 
   const canGoNext = state.currentStep < 5;
   const canGoPrev = state.currentStep > 0;
@@ -314,7 +326,13 @@ export default function App() {
       case 4:
         return <Step4Investigations state={state} />;
       case 5:
-        return <Step5Results state={state} calculateResult={calculateResult} />;
+        return (
+          <Step5Results
+            state={state}
+            enrichedResult={enrichedResult}
+            calculateResult={calculateResult}
+          />
+        );
       default:
         return null;
     }
@@ -326,6 +344,7 @@ export default function App() {
       <aside className="hidden w-72 flex-shrink-0 space-y-4 overflow-y-auto border-r bg-white p-4 lg:block">
         <KnownFactsPanel state={state} questions={allQuestions} />
         <InvestigationPanel items={investigationItems} />
+        <ManualReviewBanner visible={enrichedResult?.manualReviewRequired ?? false} />
       </aside>
 
       {/* Huvudinnehåll */}

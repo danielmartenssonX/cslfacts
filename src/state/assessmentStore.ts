@@ -1,4 +1,4 @@
-import { useReducer, useCallback } from 'react';
+import { useReducer, useCallback, useEffect } from 'react';
 import type {
   Answer,
   AnswerValue,
@@ -127,9 +127,37 @@ function assessmentReducer(state: SystemAssessment, action: Action): SystemAsses
   }
 }
 
+// ─── localStorage-persistens ─────────────────────────────────────
+const STORAGE_KEY = 'csl-verktyget-state';
+
+function loadPersistedState(): SystemAssessment {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return createInitialAssessment();
+    const parsed = JSON.parse(raw) as SystemAssessment;
+    if (!parsed.id || !Array.isArray(parsed.answers)) return createInitialAssessment();
+    return parsed;
+  } catch {
+    return createInitialAssessment();
+  }
+}
+
+function persistState(state: SystemAssessment): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    // Ignorera fel vid skrivning (kvota etc.)
+  }
+}
+
 // ─── Hook ────────────────────────────────────────────────────────
 export function useAssessmentStore() {
-  const [state, dispatch] = useReducer(assessmentReducer, undefined, createInitialAssessment);
+  const [state, dispatch] = useReducer(assessmentReducer, undefined, loadPersistedState);
+
+  // Spara till localStorage vid varje ändring
+  useEffect(() => {
+    persistState(state);
+  }, [state]);
 
   const setSystemInfo = useCallback(
     (info: {
