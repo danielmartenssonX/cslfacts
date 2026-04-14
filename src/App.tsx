@@ -72,8 +72,7 @@ function AssessmentListView({
         <div className="relative mx-auto max-w-3xl px-6 pb-12 pt-16">
           <h1 className="text-3xl font-bold text-white drop-shadow-sm">CSL-verktyget</h1>
           <p className="mt-2 max-w-lg text-sm text-white/80">
-            Klassificering av digitala tillgångar enligt IAEA NSS 17-T (Rev. 1). Deterministisk
-            regelmotor — full spårbarhet utan dolda poäng.
+            Klassificering av digitala tillgångar enligt IAEA NSS 17-T (Rev. 1).
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <button
