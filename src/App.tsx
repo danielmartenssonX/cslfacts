@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { Plus, Trash2, ChevronRight, ArrowLeft } from 'lucide-react';
 import ManualReviewBanner from './components/results/ManualReviewBanner';
 import { writeConciseSummary, writeDetailedSummary } from './services/summaryWriter';
 import WizardShell from './components/wizard/WizardShell';
@@ -12,10 +13,125 @@ import { getAnswer, getInvestigationItems, isStepComplete } from './state/select
 import { downloadJson } from './services/exportJson';
 import { downloadMarkdown } from './services/exportMarkdown';
 import { exportPdf } from './services/exportPdf';
-import type { Question } from './domain/types';
+import type { Question, SystemAssessment } from './domain/types';
 import questionBankData from './data/questionBank.sv-SE.json';
 
 const allQuestions = questionBankData.questions as unknown as Question[];
+
+// ─── Assessment-lista ────────────────────────────────────────────
+
+function statusLabel(assessment: SystemAssessment): string {
+  if (!assessment.result) return 'Utkast';
+  switch (assessment.result.status) {
+    case 'FINAL':
+      return 'Slutlig';
+    case 'PRELIMINARY_BLOCKED':
+      return 'Preliminär';
+    case 'PRELIMINARY':
+      return 'Preliminär';
+    default:
+      return 'Utkast';
+  }
+}
+
+function statusColor(assessment: SystemAssessment): string {
+  if (!assessment.result) return 'bg-gray-100 text-gray-600';
+  switch (assessment.result.status) {
+    case 'FINAL':
+      return 'bg-csl-success/10 text-csl-success';
+    case 'PRELIMINARY_BLOCKED':
+      return 'bg-csl-warning/10 text-csl-warning';
+    default:
+      return 'bg-gray-100 text-gray-600';
+  }
+}
+
+function AssessmentListView({
+  assessments,
+  onCreate,
+  onSelect,
+  onRemove,
+}: {
+  assessments: SystemAssessment[];
+  onCreate: () => void;
+  onSelect: (id: string) => void;
+  onRemove: (id: string) => void;
+}) {
+  return (
+    <div className="mx-auto max-w-3xl px-6 py-10">
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-csl-primary">CSL-verktyget</h1>
+          <p className="mt-1 text-sm text-csl-muted">
+            Klassificering av digitala tillgångar enligt IAEA NSS 17-T (Rev. 1)
+          </p>
+        </div>
+        <button
+          onClick={onCreate}
+          className="flex items-center gap-2 rounded bg-csl-primary px-4 py-2.5 text-sm font-medium text-white hover:opacity-90"
+        >
+          <Plus size={16} />
+          Ny klassning
+        </button>
+      </div>
+
+      {assessments.length === 0 ? (
+        <div className="rounded-lg border-2 border-dashed border-gray-200 p-12 text-center">
+          <p className="text-lg font-medium text-gray-500">Inga klassningar ännu</p>
+          <p className="mt-2 text-sm text-gray-400">
+            Klicka &quot;Ny klassning&quot; för att börja klassificera ett system.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {assessments
+            .slice()
+            .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+            .map((assessment) => (
+              <div
+                key={assessment.id}
+                className="flex items-center gap-4 rounded-lg border bg-white p-4 shadow-panel transition-colors hover:border-csl-primary/30"
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="truncate text-sm font-semibold text-gray-900">
+                      {assessment.systemName || 'Namnlöst system'}
+                    </h3>
+                    <span
+                      className={`shrink-0 rounded px-2 py-0.5 text-xs font-medium ${statusColor(assessment)}`}
+                    >
+                      {statusLabel(assessment)}
+                    </span>
+                  </div>
+                  <div className="mt-1 flex gap-3 text-xs text-gray-500">
+                    {assessment.facilityName && <span>{assessment.facilityName}</span>}
+                    <span>Ändrad {new Date(assessment.updatedAt).toLocaleDateString('sv-SE')}</span>
+                    <span>{assessment.answers.length} svar</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => onRemove(assessment.id)}
+                  className="shrink-0 rounded p-2 text-gray-400 hover:bg-red-50 hover:text-csl-danger"
+                  title="Ta bort"
+                >
+                  <Trash2 size={16} />
+                </button>
+
+                <button
+                  onClick={() => onSelect(assessment.id)}
+                  className="flex shrink-0 items-center gap-1 rounded bg-csl-primary/5 px-3 py-2 text-sm font-medium text-csl-primary hover:bg-csl-primary/10"
+                >
+                  Öppna
+                  <ChevronRight size={14} />
+                </button>
+              </div>
+            ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ─── Stegkomponenter ─────────────────────────────────────────────
 
@@ -23,8 +139,13 @@ function Step0SystemInfo({
   state,
   setSystemInfo,
 }: {
-  state: ReturnType<typeof useAssessmentStore>['state'];
-  setSystemInfo: ReturnType<typeof useAssessmentStore>['setSystemInfo'];
+  state: SystemAssessment;
+  setSystemInfo: (info: {
+    systemName: string;
+    systemDescription: string;
+    facilityName: string;
+    assessor: string;
+  }) => void;
 }) {
   return (
     <div className="space-y-4">
@@ -90,7 +211,7 @@ function Step0SystemInfo({
               })
             }
             className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-csl-primary focus:outline-none focus:ring-1 focus:ring-csl-primary"
-            placeholder="t.ex. Ringhals 3"
+            placeholder="t.ex. Forsmark 1"
           />
         </div>
         <div>
@@ -119,15 +240,15 @@ function Step0SystemInfo({
 }
 
 function QuestionSection({
-  section,
   state,
   setAnswer,
+  section,
   subtitle,
   step,
 }: {
+  state: SystemAssessment;
+  setAnswer: (questionId: string, value: import('./domain/types').AnswerValue) => void;
   section: string;
-  state: ReturnType<typeof useAssessmentStore>['state'];
-  setAnswer: ReturnType<typeof useAssessmentStore>['setAnswer'];
   subtitle: string;
   step: number;
 }) {
@@ -150,7 +271,7 @@ function QuestionSection({
   );
 }
 
-function Step4Investigations({ state }: { state: ReturnType<typeof useAssessmentStore>['state'] }) {
+function Step4Investigations({ state }: { state: SystemAssessment }) {
   const items = getInvestigationItems(state, allQuestions);
   const blocking = items.filter((i) => i.blocksFinalization);
   const nonBlocking = items.filter((i) => !i.blocksFinalization);
@@ -222,9 +343,9 @@ function Step5Results({
   enrichedResult,
   calculateResult,
 }: {
-  state: ReturnType<typeof useAssessmentStore>['state'];
+  state: SystemAssessment;
   enrichedResult: import('./domain/types').ClassificationResult | null;
-  calculateResult: ReturnType<typeof useAssessmentStore>['calculateResult'];
+  calculateResult: (questions: Question[]) => void;
 }) {
   if (!enrichedResult) {
     return (
@@ -254,11 +375,33 @@ function Step5Results({
   );
 }
 
-// ─── Huvudapp ────────────────────────────────────────────────────
+// ─── Wizard-vy ───────────────────────────────────────────────────
 
-export default function App() {
-  const { state, setSystemInfo, setAnswer, setStep, calculateResult } = useAssessmentStore();
-
+function WizardView({
+  state,
+  backToList,
+  setSystemInfo,
+  setAnswer,
+  setStep,
+  calculateResult,
+}: {
+  state: SystemAssessment;
+  backToList: () => void;
+  setSystemInfo: (info: {
+    systemName: string;
+    systemDescription: string;
+    facilityName: string;
+    assessor: string;
+  }) => void;
+  setAnswer: (
+    questionId: string,
+    value: import('./domain/types').AnswerValue,
+    functionId?: string,
+    comment?: string,
+  ) => void;
+  setStep: (step: number) => void;
+  calculateResult: (questions: Question[]) => void;
+}) {
   const completedSteps = useMemo(
     () => Array.from({ length: 6 }, (_, i) => isStepComplete(state, i, allQuestions)),
     [state],
@@ -266,7 +409,6 @@ export default function App() {
 
   const investigationItems = useMemo(() => getInvestigationItems(state, allQuestions), [state]);
 
-  // Berika resultatet med dynamisk motiveringstext
   const enrichedResult = useMemo(() => {
     if (!state.result) return null;
     return {
@@ -281,7 +423,6 @@ export default function App() {
 
   const handleNext = () => {
     if (state.currentStep === 4) {
-      // Beräkna resultat automatiskt vid övergång till steg 5
       calculateResult(allQuestions);
     }
     setStep(Math.min(state.currentStep + 1, 5));
@@ -340,14 +481,19 @@ export default function App() {
 
   return (
     <div className="flex min-h-screen bg-csl-background">
-      {/* Sidebar */}
       <aside className="hidden w-72 flex-shrink-0 space-y-4 overflow-y-auto border-r bg-white p-4 lg:block">
+        <button
+          onClick={backToList}
+          className="flex w-full items-center gap-1 rounded px-2 py-1.5 text-xs font-medium text-csl-primary hover:bg-csl-primary/5"
+        >
+          <ArrowLeft size={14} />
+          Alla klassningar
+        </button>
         <KnownFactsPanel state={state} questions={allQuestions} />
         <InvestigationPanel items={investigationItems} />
         <ManualReviewBanner visible={enrichedResult?.manualReviewRequired ?? false} />
       </aside>
 
-      {/* Huvudinnehåll */}
       <div className="flex-1">
         <WizardShell
           currentStep={state.currentStep}
@@ -362,5 +508,33 @@ export default function App() {
         </WizardShell>
       </div>
     </div>
+  );
+}
+
+// ─── Huvudapp ────────────────────────────────────────────────────
+
+export default function App() {
+  const store = useAssessmentStore();
+
+  if (!store.activeAssessment) {
+    return (
+      <AssessmentListView
+        assessments={store.assessments}
+        onCreate={store.create}
+        onSelect={store.select}
+        onRemove={store.remove}
+      />
+    );
+  }
+
+  return (
+    <WizardView
+      state={store.activeAssessment}
+      backToList={store.backToList}
+      setSystemInfo={store.setSystemInfo}
+      setAnswer={store.setAnswer}
+      setStep={store.setStep}
+      calculateResult={store.calculateResult}
+    />
   );
 }
