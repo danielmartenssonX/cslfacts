@@ -449,15 +449,16 @@ function WizardView({
   const canGoNext = state.currentStep < 6;
   const canGoPrev = state.currentStep > 0;
 
-  const handleNext = () => {
-    // Beräkna/omberäkna resultat vid övergång till resultatsteget
-    if (state.currentStep === 5) {
+  // Navigera till steg — omberäkna alltid resultat vid navigering till resultatsteget
+  const goToStep = (target: number) => {
+    if (target === 6) {
       calculateResult(allQuestions);
     }
-    setStep(Math.min(state.currentStep + 1, 6));
+    setStep(target);
   };
 
-  const handlePrev = () => setStep(Math.max(state.currentStep - 1, 0));
+  const handleNext = () => goToStep(Math.min(state.currentStep + 1, 6));
+  const handlePrev = () => goToStep(Math.max(state.currentStep - 1, 0));
 
   const renderStep = () => {
     switch (state.currentStep) {
@@ -543,7 +544,7 @@ function WizardView({
       <div className="flex-1">
         <WizardShell
           currentStep={state.currentStep}
-          onStepClick={setStep}
+          onStepClick={goToStep}
           completedSteps={completedSteps}
           onNext={handleNext}
           onPrev={handlePrev}
