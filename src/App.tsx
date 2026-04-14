@@ -303,7 +303,7 @@ function Step4Investigations({ state }: { state: SystemAssessment }) {
   return (
     <div>
       <StepHeader
-        step={4}
+        step={5}
         subtitle="Frågor som besvarats med 'Vet inte än' samlas här som utredningspunkter."
       />
 
@@ -371,30 +371,33 @@ function Step5Results({
   enrichedResult: import('./domain/types').ClassificationResult | null;
   calculateResult: (questions: Question[]) => void;
 }) {
-  if (!enrichedResult) {
-    return (
-      <div>
-        <StepHeader step={5} subtitle="Beräkna klassificeringsresultatet." />
-        <button
-          onClick={() => calculateResult(allQuestions)}
-          className="rounded bg-csl-primary px-6 py-3 text-sm font-medium text-white hover:opacity-90"
-        >
-          Beräkna resultat
-        </button>
-      </div>
-    );
-  }
-
   return (
     <div>
-      <StepHeader step={5} subtitle="Resultat och motivering." />
-      <ResultSummary
-        result={enrichedResult}
-        questions={allQuestions}
-        onExportJson={() => downloadJson(state)}
-        onExportMarkdown={() => downloadMarkdown(state)}
-        onExportPdf={() => exportPdf(state)}
-      />
+      <StepHeader step={6} subtitle="Resultat och motivering." />
+
+      {/* Knapp för att (om)beräkna resultatet */}
+      <div className="mb-6">
+        <button
+          onClick={() => calculateResult(allQuestions)}
+          className="rounded bg-csl-primary px-5 py-2.5 text-sm font-medium text-white hover:opacity-90"
+        >
+          {enrichedResult ? 'Beräkna om' : 'Beräkna resultat'}
+        </button>
+      </div>
+
+      {!enrichedResult ? (
+        <p className="text-sm text-gray-500">
+          Tryck &quot;Beräkna resultat&quot; för att se klassificeringen.
+        </p>
+      ) : (
+        <ResultSummary
+          result={enrichedResult}
+          questions={allQuestions}
+          onExportJson={() => downloadJson(state)}
+          onExportMarkdown={() => downloadMarkdown(state)}
+          onExportPdf={() => exportPdf(state)}
+        />
+      )}
     </div>
   );
 }
@@ -448,8 +451,8 @@ function WizardView({
   const canGoPrev = state.currentStep > 0;
 
   const handleNext = () => {
+    // Beräkna/omberäkna resultat vid övergång till resultatsteget
     if (state.currentStep === 5) {
-      // Beräkna resultat automatiskt vid övergång till resultatsteget
       calculateResult(allQuestions);
     }
     setStep(Math.min(state.currentStep + 1, 6));
