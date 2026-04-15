@@ -29,8 +29,11 @@ function SecrecyModal({ onDismiss }) {
 }
 
 // ─── Huvudkomponent ──────────────────────────────────────────────
+const IS_DEMO = import.meta.env.VITE_DEMO_MODE === 'true';
+
 export default function CSLApp() {
-  const [secrecyDismissed, setSecrecyDismissed] = useState(false);
+  // I demo-läge hanteras sekretessvarningen inne i App (efter login)
+  const [secrecyDismissed, setSecrecyDismissed] = useState(IS_DEMO);
 
   return (
     <div data-testid="app-shell" className="min-h-screen bg-csl-background">

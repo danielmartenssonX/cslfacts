@@ -908,9 +908,32 @@ export default function App() {
   const store = useAssessmentStore();
   const [showInfo, setShowInfo] = useState(false);
   const [authenticated, setAuthenticated] = useState(!IS_DEMO);
+  const [demoSecrecyDismissed, setDemoSecrecyDismissed] = useState(!IS_DEMO);
 
   if (IS_DEMO && !authenticated) {
     return <DemoLoginScreen onAuthenticate={() => setAuthenticated(true)} />;
+  }
+
+  // Sekretessvarning efter login i demo-läge
+  if (IS_DEMO && !demoSecrecyDismissed) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className="mx-4 max-w-lg rounded-lg bg-white p-6 shadow-xl">
+          <h2 className="mb-4 text-lg font-semibold text-csl-primary">Sekretessvarning</h2>
+          <p className="mb-6 text-sm text-gray-700">
+            Detta verktyg hanterar information som kan omfattas av sekretess. Ange inte uppgifter
+            med högre sekretessgrad än vad miljön tillåter. I denna demo-version lagras data hos
+            render.com.
+          </p>
+          <button
+            onClick={() => setDemoSecrecyDismissed(true)}
+            className="rounded bg-csl-primary px-4 py-2 text-sm font-medium text-white hover:opacity-90"
+          >
+            Jag förstår
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (showInfo) {
