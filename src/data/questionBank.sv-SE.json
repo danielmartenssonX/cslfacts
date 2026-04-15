@@ -9,9 +9,9 @@
       "helpText": "Tänk på vad systemet faktiskt gör i vardagen. Det räcker inte med ett produktnamn eller tekniskt namn.",
       "exampleText": "Exempel: övervakning, styrning, larm, underhåll, dokumenthantering eller passerkontroll.",
       "answerHelp": {
-        "yes": "Användningen är tydlig.",
-        "no": "Systemet saknar tydligt syfte eller är fel beskrivet.",
-        "unclear": "Du behöver bättre systembeskrivning innan du går vidare."
+        "yes": "Ja, användningsområdet och syftet är tydligt dokumenterat.",
+        "no": "Nej, systemet saknar tydlig beskrivning av syfte och användning.",
+        "unclear": "Behöver utredas — systembeskrivning saknas eller är otillräcklig."
       },
       "blocking": true,
       "appliesTo": ["ALL"],
@@ -25,9 +25,9 @@
       "helpText": "Tänk på systemgränsen. Det ska vara tydligt vilka delar som hör till systemet.",
       "exampleText": "Exempel: servrar, klienter, nätverk, integrationer, databaser och anslutna enheter.",
       "answerHelp": {
-        "yes": "Systemgränsen är tydlig.",
-        "no": "Avgränsningen saknas eller är felaktig.",
-        "unclear": "Du behöver ritning eller arkitekturbild."
+        "yes": "Ja, systemgränsen är tydligt definierad och dokumenterad.",
+        "no": "Nej, avgränsningen saknas eller är felaktig.",
+        "unclear": "Behöver utredas — arkitekturbild eller systemkarta behövs."
       },
       "blocking": true,
       "appliesTo": ["ALL"],
@@ -41,9 +41,9 @@
       "helpText": "Tänk på vad systemet behöver för att fungera rätt. Även stödsystem räknas.",
       "exampleText": "Exempel: identitetstjänst, databas, tidskälla, annat styrsystem eller extern tjänst.",
       "answerHelp": {
-        "yes": "Beroendena är kända.",
-        "no": "Det finns kända beroenden som ännu inte är beskrivna.",
-        "unclear": "Detta behöver utredas."
+        "yes": "Ja, uppströmsberoendena är kartlagda och dokumenterade.",
+        "no": "Nej, det finns kända beroenden som inte är beskrivna.",
+        "unclear": "Behöver utredas — integrationslista eller beroendekarta saknas."
       },
       "blocking": true,
       "appliesTo": ["ALL"],
@@ -57,9 +57,9 @@
       "helpText": "Tänk på vad som kan få fel eller sluta fungera om detta system får problem.",
       "exampleText": "Exempel: operatörsbilder, larmkedjor, rapporter eller annan styrning.",
       "answerHelp": {
-        "yes": "Följdsystemen är kända.",
-        "no": "Man vet att följdeffekter finns men inte var.",
-        "unclear": "Det kräver mer analys av flöden och beroenden."
+        "yes": "Ja, nedströmsberoendena är kartlagda och dokumenterade.",
+        "no": "Nej, det finns kända följdeffekter som inte är beskrivna.",
+        "unclear": "Behöver utredas — dataflöden och driftsamband behöver analyseras."
       },
       "blocking": true,
       "appliesTo": ["ALL"],
@@ -73,9 +73,9 @@
       "helpText": "Tänk på både fjärråtkomst och fysisk serviceåtkomst.",
       "exampleText": "Exempel: support via VPN, servicedator, konsultåtkomst på plats.",
       "answerHelp": {
-        "yes": "Det är känt om sådan åtkomst finns eller inte.",
-        "no": "Frågan är utredd och svaret är nej.",
-        "unclear": "Det är oklart om extern åtkomst förekommer."
+        "yes": "Ja, externa parter har åtkomst (fjärr eller fysiskt).",
+        "no": "Nej, inga externa parter har åtkomst till systemet.",
+        "unclear": "Behöver utredas — det är oklart om extern åtkomst förekommer."
       },
       "blocking": false,
       "appliesTo": ["ALL"],
@@ -89,9 +89,9 @@
       "helpText": "Tänk på USB, bärbara hårddiskar, serviceutrustning och temporära lagringsmedia.",
       "exampleText": "Exempel: uppdatering via USB, logguttag eller konfigurationsfiler från bärbar dator.",
       "answerHelp": {
-        "yes": "Det är känt om sådana medier används eller inte.",
-        "no": "Frågan är utredd och svaret är nej.",
-        "unclear": "Det kräver kontroll i drift eller underhåll."
+        "yes": "Ja, flyttbara medier används i drift eller underhåll.",
+        "no": "Nej, inga flyttbara medier används i systemet.",
+        "unclear": "Behöver utredas — kontrollera med drift eller underhåll."
       },
       "blocking": false,
       "appliesTo": ["ALL"],
@@ -105,9 +105,9 @@
       "helpText": "Målet är att undvika att ett och samma klassningsobjekt blandar för många olika roller.",
       "exampleText": "Exempel: samma system kan både övervaka drift och bära känslig information.",
       "answerHelp": {
-        "yes": "Det är tydligt om systemet har en eller flera funktioner.",
-        "no": "Systemet är fel beskrivet eller blandar roller utan ordning.",
-        "unclear": "Systemet behöver delas upp eller analyseras mer."
+        "yes": "Ja, funktionerna är tydligt identifierade och avgränsade.",
+        "no": "Nej, systemet blandar roller utan tydlig avgränsning.",
+        "unclear": "Behöver utredas — funktionsgenomgång krävs."
       },
       "blocking": true,
       "appliesTo": ["ALL"],
@@ -121,9 +121,9 @@
       "helpText": "Ibland är det bättre att klassificera delar var för sig än att tvinga in allt i en bedömning.",
       "exampleText": "Exempel: separat serverdel, separat operatörsdel eller separat informationsdel.",
       "answerHelp": {
-        "yes": "Bedömningsobjektet är tydligt.",
-        "no": "Systemet är fel avgränsat.",
-        "unclear": "Det kräver omtag i scope och eventuell uppdelning."
+        "yes": "Ja, systemet är en sammanhållen enhet som kan klassificeras som helhet.",
+        "no": "Nej, systemet bör delas upp i delsystem före klassificering.",
+        "unclear": "Behöver utredas — logisk indelning och scope behöver ses över."
       },
       "blocking": true,
       "appliesTo": ["ALL"],
