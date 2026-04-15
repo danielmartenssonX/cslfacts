@@ -85,18 +85,18 @@
     {
       "id": "Q06",
       "section": "SCOPE",
-      "text": "Används flyttbara medier (USB, bärbara diskar, serviceutrustning) i systemet?",
-      "helpText": "Tänk på USB, bärbara hårddiskar, serviceutrustning och temporära lagringsmedia.",
-      "exampleText": "Exempel: uppdatering via USB, logguttag eller konfigurationsfiler från bärbar dator.",
+      "text": "Ansluts flyttbara medier eller tillfälliga enheter till systemet i drift eller underhåll?",
+      "helpText": "Flyttbara medier och tillfälliga enheter är en vanlig väg in för skadlig kod till annars isolerade system. Kartläggningen behövs för att bedöma attackytan och för krav 8.16(m) om mediekontroll.",
+      "exampleText": "Exempel: USB-minnen för firmware- eller konfigurationsuppdatering, serviceklient som ansluts av leverantör, logguttag till bärbar dator, temporär diagnosutrustning.",
       "answerHelp": {
-        "yes": "Ja, flyttbara medier används i drift eller underhåll.",
-        "no": "Nej, inga flyttbara medier används i systemet.",
-        "unclear": "Behöver utredas — kontrollera med drift eller underhåll."
+        "yes": "Ja, flyttbara medier eller tillfälliga enheter ansluts regelbundet eller vid behov.",
+        "no": "Nej, inga flyttbara medier eller tillfälliga enheter ansluts till systemet.",
+        "unclear": "Behöver utredas — kontrollera med drift- eller underhållsansvarig."
       },
       "blocking": false,
       "appliesTo": ["ALL"],
       "whoCanAnswer": ["Driftansvarig", "Underhållsansvarig", "Leverantör"],
-      "investigationHint": "Fråga drift, underhåll eller leverantör."
+      "investigationHint": "Kontrollera faktiska underhållsrutiner, serviceavtal och drift-SOP."
     },
     {
       "id": "Q07",
