@@ -10,7 +10,10 @@ import {
   BookOpen,
   Upload,
   Save,
+  Shield,
 } from 'lucide-react';
+
+const IS_DEMO = import.meta.env.VITE_DEMO_MODE === 'true';
 import ManualReviewBanner from './components/results/ManualReviewBanner';
 import ClassificationInfoView from './components/info/ClassificationInfoView';
 import { writeConciseSummary, writeDetailedSummary } from './services/summaryWriter';
@@ -835,43 +838,123 @@ function WizardView({
 
 // ─── Huvudapp ────────────────────────────────────────────────────
 
+// ─── Demo-läge: login + banner (bara vid VITE_DEMO_MODE=true) ───
+
+const DEMO_ACCESS_CODE = '1234';
+
+function DemoLoginScreen({ onAuthenticate }: { onAuthenticate: () => void }) {
+  const [code, setCode] = useState('');
+  const [error, setError] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (code === DEMO_ACCESS_CODE) {
+      onAuthenticate();
+    } else {
+      setError(true);
+      setCode('');
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-csl-primary">
+      <form onSubmit={handleSubmit} className="w-full max-w-xs rounded-2xl bg-white p-8 shadow-lg">
+        <div className="mb-6 flex justify-center">
+          <div className="rounded-lg bg-csl-primary p-3 text-white">
+            <Shield className="h-6 w-6" />
+          </div>
+        </div>
+        <h1 className="mb-1 text-center text-lg font-semibold text-gray-900">cslFacts</h1>
+        <p className="mb-6 text-center text-sm text-gray-500">Ange åtkomstkod</p>
+        <input
+          autoFocus
+          type="password"
+          inputMode="numeric"
+          maxLength={4}
+          value={code}
+          onChange={(e) => {
+            setError(false);
+            setCode(e.target.value.replace(/\D/g, ''));
+          }}
+          className={`mb-3 w-full rounded-lg border px-4 py-3 text-center text-2xl tracking-[0.5em] ${
+            error ? 'border-red-400 bg-red-50' : 'border-gray-300'
+          }`}
+          placeholder="····"
+        />
+        {error && <p className="mb-3 text-center text-sm text-red-600">Felaktig kod</p>}
+        <button
+          type="submit"
+          disabled={code.length < 4}
+          className="w-full rounded-lg bg-csl-primary px-4 py-2.5 text-sm font-medium text-white disabled:opacity-40"
+        >
+          Logga in
+        </button>
+      </form>
+    </div>
+  );
+}
+
+function DemoBanner() {
+  return (
+    <div className="bg-amber-500 px-4 py-1.5 text-center text-xs font-semibold text-white">
+      DEMO-VERSION — körs hos render.com — endast för demonstration och utvärdering
+    </div>
+  );
+}
+
 export default function App() {
   const store = useAssessmentStore();
   const [showInfo, setShowInfo] = useState(false);
+  const [authenticated, setAuthenticated] = useState(!IS_DEMO);
+
+  if (IS_DEMO && !authenticated) {
+    return <DemoLoginScreen onAuthenticate={() => setAuthenticated(true)} />;
+  }
 
   if (showInfo) {
-    return <ClassificationInfoView onBack={() => setShowInfo(false)} />;
+    return (
+      <>
+        {IS_DEMO && <DemoBanner />}
+        <ClassificationInfoView onBack={() => setShowInfo(false)} />
+      </>
+    );
   }
 
   if (!store.activeAssessment) {
     return (
-      <AssessmentListView
-        assessments={store.assessments}
-        onCreate={store.create}
-        onSelect={store.select}
-        onRemove={store.remove}
-        onShowInfo={() => setShowInfo(true)}
-        onLoadExample={(exampleId) => {
-          const assessment = buildExampleAssessment(exampleId);
-          if (assessment) store.loadExample(assessment);
-        }}
-        onImportFile={store.importFromFile}
-        onSave={store.saveToFile}
-      />
+      <>
+        {IS_DEMO && <DemoBanner />}
+        <AssessmentListView
+          assessments={store.assessments}
+          onCreate={store.create}
+          onSelect={store.select}
+          onRemove={store.remove}
+          onShowInfo={() => setShowInfo(true)}
+          onLoadExample={(exampleId) => {
+            const assessment = buildExampleAssessment(exampleId);
+            if (assessment) store.loadExample(assessment);
+          }}
+          onImportFile={store.importFromFile}
+          onSave={store.saveToFile}
+        />
+      </>
     );
   }
 
   return (
-    <WizardView
-      state={store.activeAssessment}
-      backToList={store.backToList}
-      onShowInfo={() => setShowInfo(true)}
-      setSystemInfo={store.setSystemInfo}
-      setAnswer={store.setAnswer}
-      setStep={store.setStep}
-      calculateResult={store.calculateResult}
-      setRequirementCompliance={store.setRequirementCompliance}
-      saveToFile={store.saveToFile}
-    />
+    <>
+      {IS_DEMO && <DemoBanner />}
+      <WizardView
+        state={store.activeAssessment}
+        backToList={store.backToList}
+        onShowInfo={() => setShowInfo(true)}
+        setSystemInfo={store.setSystemInfo}
+        setAnswer={store.setAnswer}
+        setStep={store.setStep}
+        calculateResult={store.calculateResult}
+        setRequirementCompliance={store.setRequirementCompliance}
+        saveToFile={store.saveToFile}
+      />
+    </>
   );
 }
