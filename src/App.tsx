@@ -215,7 +215,11 @@ function AboutAndGuideSection() {
                   återställa bedömningar från en tidigare sparad fil. Det fungerar även på en annan
                   dator.
                 </li>
-                <li>Inget skickas till någon server. All data stannar lokalt hos dig.</li>
+                <li>
+                  {IS_DEMO
+                    ? 'Denna demo-version körs hos render.com. Data lagras i webbläsarens localStorage på render.com:s domän och kan därför inte betraktas som lokal. Använd "Spara till fil" för att ladda ned data till din egen dator. För full lokal kontroll — kör cslFacts på din egen dator.'
+                    : 'Inget skickas till någon server. All data stannar lokalt hos dig.'}
+                </li>
               </ul>
             </div>
 
