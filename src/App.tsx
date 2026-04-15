@@ -141,6 +141,14 @@ function AboutAndGuideSection() {
                 poängmodeller eller AI-baserade slutledningar. Varje utfall kan spåras tillbaka till
                 exakt vilka svar som gav vilken nivå.
               </p>
+              {IS_DEMO && (
+                <p className="mt-3 rounded border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                  <strong>Obs:</strong> Du kör en demo-version som är publicerad på render.com.
+                  cslFacts är normalt avsett att köras lokalt på användarens egen dator, utan
+                  beroende av externa servrar. I den lokala versionen lagras all data enbart i din
+                  webbläsare — inget skickas till någon server.
+                </p>
+              )}
             </div>
 
             {/* Steg-för-steg */}
