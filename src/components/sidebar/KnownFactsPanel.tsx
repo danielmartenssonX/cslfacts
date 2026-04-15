@@ -38,7 +38,7 @@ export default function KnownFactsPanel({ state, questions }: KnownFactsPanelPro
       <div className="space-y-1 text-xs">
         <p className="text-csl-success">{answeredYes.length} svar: Ja</p>
         <p className="text-csl-danger">{answeredNo.length} svar: Nej</p>
-        <p className="text-csl-warning">{answeredUnclear.length} svar: Vet inte än</p>
+        <p className="text-csl-warning">{answeredUnclear.length} svar: Utreds</p>
         <p className="text-gray-500">{questions.length - state.answers.length} obesvarade</p>
       </div>
     </div>

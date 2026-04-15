@@ -185,7 +185,7 @@ function AboutAndGuideSection() {
                 <GuideStep
                   n={6}
                   title="Oklarheter"
-                  text='Här visas alla frågor du svarat "Vet inte än" på, med utredningsledtrådar och förslag på vem som kan svara. Blockerande oklarheter måste lösas innan slutlig klassning.'
+                  text='Här visas alla frågor du svarat "Utreds" på, med utredningsledtrådar och förslag på vem som kan svara. Blockerande oklarheter måste lösas innan slutlig klassning.'
                 />
                 <GuideStep
                   n={7}
@@ -247,7 +247,7 @@ function AboutAndGuideSection() {
                 <li>
                   I kontextsteget finns en kontrollfråga (Q32) som frågar om det finns anledning att
                   tro att systemet bör klassas högre än vad verktygets regler föreslår. Om du svarar
-                  &quot;Ja&quot; eller &quot;Vet inte än&quot; markeras bedömningen som &quot;Kräver
+                  &quot;Ja&quot; eller &quot;Utreds&quot; markeras bedömningen som &quot;Kräver
                   specialistgranskning&quot; — den kan då inte fastställas som slutlig förrän en
                   specialist har granskat och tagit ställning.
                 </li>
@@ -579,7 +579,7 @@ function Step4Investigations({ state }: { state: SystemAssessment }) {
     <div>
       <StepHeader
         step={5}
-        subtitle="Frågor som besvarats med 'Vet inte än' samlas här som utredningspunkter."
+        subtitle="Frågor som besvarats med 'Utreds' samlas här som utredningspunkter."
       />
 
       {items.length === 0 ? (

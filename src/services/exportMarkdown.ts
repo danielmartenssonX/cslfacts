@@ -17,7 +17,7 @@ function answerLabel(value: string): string {
     case 'NO':
       return 'Nej';
     case 'UNCLEAR':
-      return 'Vet inte än';
+      return 'Utreds';
     default:
       return value;
   }

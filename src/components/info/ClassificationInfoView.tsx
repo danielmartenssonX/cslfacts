@@ -243,7 +243,7 @@ export default function ClassificationInfoView({ onBack }: ClassificationInfoVie
             <div className="space-y-3 text-sm text-gray-700">
               <p>
                 Vissa frågor <strong>måste</strong> besvaras innan klassificeringen kan fastställas.
-                Om en blockerande fråga besvaras med &quot;Vet inte än&quot; blir resultatet
+                Om en blockerande fråga besvaras med &quot;Utreds&quot; blir resultatet
                 <strong> preliminärt</strong> och en utredningspunkt skapas automatiskt.
               </p>
               <div className="rounded-lg border bg-gray-50 p-4">
@@ -295,7 +295,7 @@ export default function ClassificationInfoView({ onBack }: ClassificationInfoVie
               />
               <RuleCard
                 title="Manuell granskning (Q32)"
-                description="Om kontrollfråga Q32 besvaras med 'Ja' eller 'Vet inte än' flaggas bedömningen för specialistgranskning. Detta innebär att regelmotorn kan underskatta nivån."
+                description="Om kontrollfråga Q32 besvaras med 'Ja' eller 'Utreds' flaggas bedömningen för specialistgranskning. Detta innebär att regelmotorn kan underskatta nivån."
               />
               <RuleCard
                 title="Primärt system måste pekas ut (Q30)"

@@ -91,7 +91,7 @@ export function buildFullDecisionTrace(result: ClassificationResult): DecisionTr
   if (result.blockingQuestionIds.length > 0) {
     trace.push(
       makeItem(order++, 'Blockerande oklarheter', {
-        conclusion: `${result.blockingQuestionIds.length} blockerande fråga(or) har svaret "Vet inte än" — klassificeringen är preliminär.`,
+        conclusion: `${result.blockingQuestionIds.length} blockerande fråga(or) har svaret "Utreds" — klassificeringen är preliminär.`,
         reasoning: `Frågorna ${result.blockingQuestionIds.join(', ')} måste besvaras innan klassificeringen kan fastställas som slutlig.`,
         relatedQuestionIds: result.blockingQuestionIds,
       }),

@@ -9,7 +9,7 @@ interface AnswerButtonsProps {
 const OPTIONS: { value: AnswerValue; label: string; key: 'yes' | 'no' | 'unclear' }[] = [
   { value: 'YES', label: 'Ja', key: 'yes' },
   { value: 'NO', label: 'Nej', key: 'no' },
-  { value: 'UNCLEAR', label: 'Vet inte än', key: 'unclear' },
+  { value: 'UNCLEAR', label: 'Utreds', key: 'unclear' },
 ];
 
 export default function AnswerButtons({ currentValue, onAnswer, answerHelp }: AnswerButtonsProps) {
