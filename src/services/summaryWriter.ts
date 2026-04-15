@@ -6,17 +6,21 @@ import { CSL_RATIONALE, buildSystemRationale } from '../data/cslRationale';
  * Skapa en kort beslutsförklaring för vanlig användare.
  */
 export function writeConciseSummary(result: ClassificationResult): string {
-  if (result.status === 'PRELIMINARY_BLOCKED') {
+  if (result.status === 'BLOCKED') {
     return `Bedömningen kan inte slutföras ännu. ${result.blockingQuestionIds.length} fråga(or) behöver besvaras innan klassificeringen kan fastställas.`;
   }
 
-  if (result.systemLevel === 'UNRESOLVED') {
-    return 'Ingen nivå har kunnat fastställas utifrån de svar som lämnats. Konsekvensbedömningen behöver kompletteras.';
+  if (result.status === 'REVIEW_REQUIRED') {
+    return 'Bedömningen kräver specialistgranskning innan nivån kan fastställas som slutlig.';
+  }
+
+  if (result.systemLevel === 'REVIEW_REQUIRED') {
+    return 'Ingen nivå har kunnat fastställas utifrån de svar som lämnats. Specialistgranskning krävs.';
   }
 
   const levelRationale = CSL_RATIONALE[result.systemLevel];
   const resolvedFunctions = result.functionResults.filter(
-    (fr) => fr.candidateLevel !== 'UNRESOLVED',
+    (fr) => fr.candidateLevel !== 'REVIEW_REQUIRED',
   );
 
   const functionNames = resolvedFunctions

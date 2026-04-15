@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Save } from 'lucide-react';
 import ProgressBar from './ProgressBar';
 
 interface WizardShellProps {
@@ -10,6 +11,7 @@ interface WizardShellProps {
   onPrev?: () => void;
   canGoNext: boolean;
   canGoPrev: boolean;
+  onSave?: () => void;
 }
 
 export default function WizardShell({
@@ -21,11 +23,12 @@ export default function WizardShell({
   onPrev,
   canGoNext,
   canGoPrev,
+  onSave,
 }: WizardShellProps) {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="border-b bg-white px-6 py-4 shadow-panel">
-        <h1 className="text-lg font-bold text-csl-primary">CSL-verktyget</h1>
+        <h1 className="text-lg font-bold text-csl-primary">cslFacts</h1>
         <p className="text-xs text-csl-muted">
           Klassificering av digitala tillgångar enligt IAEA NSS 17-T (Rev. 1)
         </p>
@@ -41,19 +44,31 @@ export default function WizardShell({
         <div className="mx-auto max-w-content">{children}</div>
       </div>
 
-      <footer className="border-t bg-white px-6 py-3">
-        <div className="mx-auto flex max-w-content justify-between">
+      <footer className="border-t bg-white px-4 py-3 sm:px-6">
+        <div className="mx-auto flex max-w-content flex-wrap items-center justify-between gap-2">
           <button
             onClick={onPrev}
             disabled={!canGoPrev}
-            className="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-40"
+            className="rounded border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-40 sm:px-4 sm:text-sm"
           >
             Föregående
           </button>
+
+          {onSave && (
+            <button
+              onClick={onSave}
+              className="flex items-center gap-1.5 rounded border border-gray-300 px-3 py-2 text-xs font-medium text-gray-600 hover:border-csl-primary/30 hover:bg-csl-primary/5 hover:text-csl-primary sm:px-4 sm:text-sm"
+              title="Spara alla bedömningar till fil"
+            >
+              <Save size={14} />
+              Spara
+            </button>
+          )}
+
           <button
             onClick={onNext}
             disabled={!canGoNext}
-            className="rounded bg-csl-primary px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-40"
+            className="rounded bg-csl-primary px-3 py-2 text-xs font-medium text-white hover:opacity-90 disabled:opacity-40 sm:px-4 sm:text-sm"
           >
             Nästa
           </button>

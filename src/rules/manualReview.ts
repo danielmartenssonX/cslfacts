@@ -26,7 +26,7 @@ export function checkManualReviewFlags(answers: Answer[]): {
 
   if (analogFallbackNoted) {
     notes.push(
-      'Analog eller manuell fallback har noterats (Q28). Detta sänker inte nivån automatiskt men kan användas som motiveringsfaktor vid manuell granskning.',
+      'Analog eller manuell fallback har noterats (Q28). Enligt IAEA NSS 17-T kan detta tala för en lägre nivå, men kräver manuell motivering. Verktyget sänker aldrig nivån automatiskt på denna grund.',
     );
   }
 

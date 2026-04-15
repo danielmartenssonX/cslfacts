@@ -1,6 +1,11 @@
 import type { SystemAssessment, Question } from '../domain/types';
-import { CSL_LABELS, FUNCTION_TYPE_LABELS } from '../domain/enums';
+import { CSL_LABELS, FUNCTION_TYPE_LABELS, COMPLIANCE_STATUS_LABELS } from '../domain/enums';
 import { CSL_RATIONALE, buildFunctionRationale } from '../data/cslRationale';
+import {
+  CSL_REQUIREMENTS,
+  getApplicableRequirements,
+  getRequirementLevelLabel,
+} from '../data/cslRequirements';
 import questionBankData from '../data/questionBank.sv-SE.json';
 
 const allQuestions = questionBankData.questions as unknown as Question[];
@@ -24,8 +29,10 @@ function statusLabel(status: string): string {
       return 'Utkast';
     case 'PRELIMINARY':
       return 'Preliminär';
-    case 'PRELIMINARY_BLOCKED':
-      return 'Preliminär (blockerande oklarheter kvarstår)';
+    case 'BLOCKED':
+      return 'Blockerad (oklarheter kvarstår)';
+    case 'REVIEW_REQUIRED':
+      return 'Kräver specialistgranskning';
     case 'FINAL':
       return 'Slutlig';
     default:
@@ -57,7 +64,7 @@ export function exportToMarkdown(assessment: SystemAssessment): string {
   lines.push(`## Föreslagen systemnivå: ${CSL_LABELS[r.systemLevel]}`);
   lines.push('');
 
-  if (r.status === 'PRELIMINARY_BLOCKED') {
+  if (r.status === 'BLOCKED') {
     lines.push(`| Lägsta motiverade nivå | ${CSL_LABELS[r.minimumJustifiedLevel]} |`);
     lines.push(`| Högsta ej uteslutbar nivå | ${CSL_LABELS[r.highestLevelNotRuledOut]} |`);
     lines.push('');
@@ -70,7 +77,7 @@ export function exportToMarkdown(assessment: SystemAssessment): string {
   lines.push('');
 
   // IAEA-förankrad systemmotivering
-  if (r.systemLevel !== 'UNRESOLVED') {
+  if (r.systemLevel !== 'REVIEW_REQUIRED') {
     const sysRationale = CSL_RATIONALE[r.systemLevel];
     lines.push('### Regulatorisk grund');
     lines.push('');
@@ -80,6 +87,36 @@ export function exportToMarkdown(assessment: SystemAssessment): string {
     lines.push('');
     lines.push(`**Skyddsbehov:** ${sysRationale.protectionNeed}`);
     lines.push('');
+  }
+
+  // Tillämpliga IAEA-krav
+  {
+    const reqs = getApplicableRequirements(r.systemLevel);
+    lines.push('## Tillämpliga krav (IAEA NSS 17-T)');
+    lines.push('');
+
+    if (reqs.generic.length > 0) {
+      lines.push(`### ${getRequirementLevelLabel('Generic')}`);
+      lines.push('');
+      for (const req of reqs.generic) {
+        lines.push(`- **${req.paragraph}:** ${req.textSv}`);
+      }
+      lines.push('');
+    }
+
+    if (reqs.levelSpecific.length > 0) {
+      lines.push(`### ${reqs.levelLabel}`);
+      lines.push('');
+      for (const req of reqs.levelSpecific) {
+        lines.push(`- **${req.paragraph}:** ${req.textSv}`);
+      }
+      lines.push('');
+    }
+
+    if (r.systemLevel === 'REVIEW_REQUIRED') {
+      lines.push('*Nivåspecifika krav kan inte fastställas förrän klassificeringen är slutförd.*');
+      lines.push('');
+    }
   }
 
   // Funktionsresultat med rika motiveringar
@@ -99,7 +136,7 @@ export function exportToMarkdown(assessment: SystemAssessment): string {
   }
 
   // Mest stringent-regel
-  if (r.functionResults.filter((f) => f.candidateLevel !== 'UNRESOLVED').length > 1) {
+  if (r.functionResults.filter((f) => f.candidateLevel !== 'REVIEW_REQUIRED').length > 1) {
     lines.push('### Systemnivå — mest stringent nivå');
     lines.push('');
     lines.push(
@@ -182,25 +219,58 @@ export function exportToMarkdown(assessment: SystemAssessment): string {
     lines.push('');
   }
 
-  // Beslutslogg
-  lines.push('## Beslutslogg');
+  // Beslutskedja
+  lines.push('## Beslutskedja');
+  lines.push('');
+  lines.push('Steg-för-steg-redovisning av hur klassificeringen fastställts.');
   lines.push('');
   for (const item of r.decisionTrace) {
-    lines.push(`### ${item.step}`);
+    lines.push(`### Steg ${item.order}: ${item.heading}`);
     lines.push('');
-    lines.push(item.message);
+    lines.push(`**${item.conclusion}**`);
+    if (item.reasoning) {
+      lines.push('');
+      lines.push(item.reasoning);
+    }
     if (item.relatedQuestionIds && item.relatedQuestionIds.length > 0) {
       lines.push('');
-      lines.push(`*Relaterade frågor: ${item.relatedQuestionIds.join(', ')}*`);
+      lines.push(`*Frågor: ${item.relatedQuestionIds.join(', ')}*`);
     }
     lines.push('');
+  }
+
+  // Kravredovisning (om den genomförts)
+  if (assessment.requirementCompliance && assessment.requirementCompliance.length > 0) {
+    const assessed = assessment.requirementCompliance.filter((c) => c.status !== 'NOT_ASSESSED');
+    if (assessed.length > 0) {
+      lines.push('## Kravredovisning');
+      lines.push('');
+      lines.push(
+        `${assessed.length} av ${assessment.requirementCompliance.length} krav har bedömts.`,
+      );
+      lines.push('');
+      for (const item of assessed) {
+        const label = COMPLIANCE_STATUS_LABELS[item.status];
+        const reqDef = CSL_REQUIREMENTS.find((r) => r.paragraph === item.requirementParagraph);
+        lines.push(`### ${item.requirementParagraph} — ${label}`);
+        lines.push('');
+        if (reqDef) {
+          lines.push(`> ${reqDef.textSv}`);
+          lines.push('');
+        }
+        if (item.notes) {
+          lines.push(`**Redovisning:** ${item.notes}`);
+          lines.push('');
+        }
+      }
+    }
   }
 
   // Footer
   lines.push('---');
   lines.push('');
   lines.push(
-    '*Denna rapport är genererad av CSL-verktyget, ett beslutsstöd baserat på IAEA Nuclear Security Series No. 17-T (Rev. 1). ' +
+    '*Denna rapport är genererad av cslFacts, ett beslutsstöd baserat på IAEA Nuclear Security Series No. 17-T (Rev. 1). ' +
       'Verktyget ersätter inte verksamhetsansvarig bedömning, specialistgranskning eller formell fastställelse.*',
   );
   lines.push('');

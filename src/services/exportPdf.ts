@@ -2,6 +2,12 @@ import jsPDF from 'jspdf';
 import type { SystemAssessment, Question } from '../domain/types';
 import { CSL_LABELS, FUNCTION_TYPE_LABELS } from '../domain/enums';
 import { CSL_RATIONALE, QUESTION_RATIONALE } from '../data/cslRationale';
+import { COMPLIANCE_STATUS_LABELS } from '../domain/enums';
+import {
+  CSL_REQUIREMENTS,
+  getApplicableRequirements,
+  getRequirementLevelLabel,
+} from '../data/cslRequirements';
 import questionBankData from '../data/questionBank.sv-SE.json';
 
 const allQuestions = questionBankData.questions as unknown as Question[];
@@ -50,7 +56,7 @@ export function exportPdf(assessment: SystemAssessment): void {
   // Status och nivå
   addLine(`Status: ${formatStatus(r.status)}`, 11, true);
   addLine(`Systemniva: ${CSL_LABELS[r.systemLevel]}`, 12, true);
-  if (r.status === 'PRELIMINARY_BLOCKED') {
+  if (r.status === 'BLOCKED') {
     addLine(`Lagsta motiverade niva: ${CSL_LABELS[r.minimumJustifiedLevel]}`);
     addLine(`Hogsta ej uteslutbar niva: ${CSL_LABELS[r.highestLevelNotRuledOut]}`);
   }
@@ -63,7 +69,7 @@ export function exportPdf(assessment: SystemAssessment): void {
   addGap(6);
 
   // IAEA-motivering
-  if (r.systemLevel !== 'UNRESOLVED') {
+  if (r.systemLevel !== 'REVIEW_REQUIRED') {
     const sysRat = CSL_RATIONALE[r.systemLevel];
     addLine('Regulatorisk grund', 12, true);
     addGap();
@@ -75,6 +81,32 @@ export function exportPdf(assessment: SystemAssessment): void {
     addGap(8);
   }
 
+  // Tillämpliga IAEA-krav
+  {
+    const reqs = getApplicableRequirements(r.systemLevel);
+    addLine('Tillampliga krav (IAEA NSS 17-T)', 14, true);
+    addGap();
+    if (reqs.generic.length > 0) {
+      addLine(getRequirementLevelLabel('Generic'), 11, true);
+      addGap(2);
+      for (const req of reqs.generic) {
+        addLine(`${req.paragraph}: ${req.textSv}`);
+        addGap(1);
+      }
+      addGap(4);
+    }
+    if (reqs.levelSpecific.length > 0) {
+      addLine(reqs.levelLabel, 11, true);
+      addGap(2);
+      for (const req of reqs.levelSpecific) {
+        addLine(`${req.paragraph}: ${req.textSv}`);
+        addGap(1);
+      }
+      addGap(4);
+    }
+    addGap(4);
+  }
+
   // Funktionsresultat
   addLine('Funktionsresultat', 14, true);
   addGap();
@@ -82,7 +114,7 @@ export function exportPdf(assessment: SystemAssessment): void {
     const label = FUNCTION_TYPE_LABELS[fr.functionType] || fr.functionType;
     addLine(`${label}: ${CSL_LABELS[fr.candidateLevel]}`, 11, true);
 
-    if (fr.candidateLevel !== 'UNRESOLVED') {
+    if (fr.candidateLevel !== 'REVIEW_REQUIRED') {
       const levelRat = CSL_RATIONALE[fr.candidateLevel];
       addLine(levelRat.consequence);
       for (const qid of fr.decisiveQuestionIds) {
@@ -137,19 +169,48 @@ export function exportPdf(assessment: SystemAssessment): void {
     addGap(4);
   }
 
-  // Beslutslogg
-  addLine('Beslutslogg', 14, true);
+  // Beslutskedja
+  addLine('Beslutskedja', 14, true);
   addGap();
+  addLine('Steg-for-steg-redovisning av hur klassificeringen faststallts.');
+  addGap(4);
   for (const item of r.decisionTrace) {
-    addLine(`[${item.step}]`, 10, true);
-    addLine(item.message);
-    addGap(2);
+    addLine(`Steg ${item.order}: ${item.heading}`, 10, true);
+    addLine(item.conclusion);
+    if (item.reasoning) {
+      addLine(item.reasoning);
+    }
+    addGap(3);
+  }
+
+  // Kravredovisning
+  if (assessment.requirementCompliance && assessment.requirementCompliance.length > 0) {
+    const assessed = assessment.requirementCompliance.filter((c) => c.status !== 'NOT_ASSESSED');
+    if (assessed.length > 0) {
+      addLine('Kravredovisning', 14, true);
+      addGap();
+      addLine(`${assessed.length} krav har bedomts.`);
+      addGap(4);
+      for (const item of assessed) {
+        const label = COMPLIANCE_STATUS_LABELS[item.status];
+        const reqDef = CSL_REQUIREMENTS.find((r) => r.paragraph === item.requirementParagraph);
+        addLine(`${item.requirementParagraph}: ${label}`, 10, true);
+        if (reqDef) {
+          addLine(`Krav: ${reqDef.textSv}`, 9);
+        }
+        if (item.notes) {
+          addLine(`Redovisning: ${item.notes}`);
+        }
+        addGap(3);
+      }
+      addGap(4);
+    }
   }
 
   // Footer
   addGap(8);
   addLine(
-    'Genererad av CSL-verktyget. Baserat pa IAEA NSS 17-T (Rev. 1). Ersatter inte verksamhetsansvarig bedomning eller formell faststallelse.',
+    'Genererad av cslFacts. Baserat pa IAEA NSS 17-T (Rev. 1). Ersatter inte verksamhetsansvarig bedomning eller formell faststallelse.',
     8,
   );
 
@@ -171,8 +232,10 @@ function formatStatus(status: string): string {
       return 'Utkast';
     case 'PRELIMINARY':
       return 'Preliminar';
-    case 'PRELIMINARY_BLOCKED':
-      return 'Preliminar (blockerande oklarheter)';
+    case 'BLOCKED':
+      return 'Blockerad (oklarheter kvarstar)';
+    case 'REVIEW_REQUIRED':
+      return 'Kraver specialistgranskning';
     case 'FINAL':
       return 'Slutlig';
     default:

@@ -99,7 +99,7 @@ function HArrow({ x1, y, x2 }: { x1: number; y: number; x2: number }) {
 
 export default function DecisionFlowDiagram() {
   return (
-    <div className="mx-auto max-w-lg rounded-lg border bg-white p-4">
+    <div className="mx-auto max-w-lg overflow-x-auto rounded-lg border bg-white p-2 sm:p-4">
       <svg
         viewBox={`0 0 ${SVG_W} ${SVG_H}`}
         width="100%"

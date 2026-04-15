@@ -1,22 +1,31 @@
 import { describe, expect, it } from 'vitest';
-import {
-  DEFAULT_BLOCKING_QUESTION_IDS,
-  getBlockingQuestionIds,
-  getUnclearBlockingAnswers,
-} from '../../src/rules/blockingRules';
-import type { Answer, Question } from '../../src/domain/types';
+import { getBlockingQuestionIds } from '../../src/rules/blockingRules';
+import type { Question } from '../../src/domain/types';
+import questionBankData from '../../src/data/questionBank.sv-SE.json';
+
+const allQuestions = questionBankData.questions as unknown as Question[];
 
 describe('blockingRules', () => {
-  it('DEFAULT_BLOCKING_QUESTION_IDS innehåller förväntade ID:n', () => {
-    expect(DEFAULT_BLOCKING_QUESTION_IDS).toContain('Q01');
-    expect(DEFAULT_BLOCKING_QUESTION_IDS).toContain('Q16');
-    expect(DEFAULT_BLOCKING_QUESTION_IDS).toContain('Q30');
-    expect(DEFAULT_BLOCKING_QUESTION_IDS).toContain('Q31');
-    expect(DEFAULT_BLOCKING_QUESTION_IDS).not.toContain('Q05');
-    expect(DEFAULT_BLOCKING_QUESTION_IDS).not.toContain('Q24');
+  it('identifierar blockerande frågor från frågebanken', () => {
+    const ids = getBlockingQuestionIds(allQuestions);
+    expect(ids).toContain('Q01');
+    expect(ids).toContain('Q16');
+    expect(ids).toContain('Q16b');
+    expect(ids).toContain('Q18b');
+    expect(ids).toContain('Q31');
   });
 
-  it('getBlockingQuestionIds extraherar blockerande frågor', () => {
+  it('Q30 är INTE blockerande', () => {
+    const ids = getBlockingQuestionIds(allQuestions);
+    expect(ids).not.toContain('Q30');
+  });
+
+  it('Q32 är INTE blockerande', () => {
+    const ids = getBlockingQuestionIds(allQuestions);
+    expect(ids).not.toContain('Q32');
+  });
+
+  it('getBlockingQuestionIds extraherar blockerande frågor från godtycklig lista', () => {
     const questions: Partial<Question>[] = [
       { id: 'Q01', blocking: true },
       { id: 'Q05', blocking: false },
@@ -24,26 +33,5 @@ describe('blockingRules', () => {
     ];
     const ids = getBlockingQuestionIds(questions as Question[]);
     expect(ids).toEqual(['Q01', 'Q16']);
-  });
-
-  it('getUnclearBlockingAnswers returnerar blockerande UNCLEAR-svar', () => {
-    const answers: Answer[] = [
-      { questionId: 'Q01', value: 'UNCLEAR' },
-      { questionId: 'Q05', value: 'UNCLEAR' },
-      { questionId: 'Q16', value: 'YES' },
-      { questionId: 'Q17', value: 'UNCLEAR' },
-    ];
-    const blocking = ['Q01', 'Q16', 'Q17'];
-    const result = getUnclearBlockingAnswers(answers, blocking);
-    expect(result).toEqual(['Q01', 'Q17']);
-  });
-
-  it('returnerar tom array om inga UNCLEAR finns bland blockerande', () => {
-    const answers: Answer[] = [
-      { questionId: 'Q01', value: 'YES' },
-      { questionId: 'Q16', value: 'NO' },
-    ];
-    const result = getUnclearBlockingAnswers(answers, ['Q01', 'Q16']);
-    expect(result).toEqual([]);
   });
 });

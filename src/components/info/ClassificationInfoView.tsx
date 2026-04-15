@@ -34,7 +34,7 @@ export default function ClassificationInfoView({ onBack }: ClassificationInfoVie
           </button>
           <h1 className="text-3xl font-bold text-white drop-shadow-sm">Om klassningsmodellen</h1>
           <p className="mt-2 max-w-lg text-sm text-white/80">
-            Full transparens kring hur CSL-verktyget klassificerar digitala tillgångar.
+            Full transparens kring hur cslFacts klassificerar digitala tillgångar.
           </p>
         </div>
       </div>
@@ -84,11 +84,13 @@ export default function ClassificationInfoView({ onBack }: ClassificationInfoVie
                   komprometteras.
                 </p>
                 <p className="mt-2">
-                  Det finns ingen automatisk 1:1-koppling mellan de två. Ett system utan formell
-                  säkerhetsklass kan ändå kräva en stringent CSL om det har stor betydelse för
-                  fysiskt skydd, nödlägeshantering eller känslig information. Omvänt behöver ett
-                  system med hög säkerhetsklass inte nödvändigtvis ha högsta CSL om det saknar
-                  digitala beroenden som kan komprometteras utifrån.
+                  IAEA uttrycker explicit att det inte finns en automatisk koppling mellan
+                  säkerhetsklass och CSL. Ett system utan formell säkerhetsklass kan ändå kräva en
+                  stringent CSL om det har stor betydelse för fysiskt skydd, nödlägeshantering eller
+                  känslig information. Omvänt behöver ett system med hög säkerhetsklass inte
+                  nödvändigtvis ha högsta CSL om det saknar digitala beroenden som kan
+                  komprometteras utifrån. Ett system kan alltså kräva stringent CSL även utan
+                  formell säkerhetsklass.
                 </p>
               </div>
             </div>
@@ -108,7 +110,9 @@ export default function ClassificationInfoView({ onBack }: ClassificationInfoVie
           {/* Sektion 3: CSL-nivåer */}
           <section>
             <SectionHeader icon={<ShieldCheck size={20} />} title="CSL-nivåer" />
-            <div className="overflow-x-auto">
+
+            {/* Desktop: tabell */}
+            <div className="hidden overflow-x-auto sm:block">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b text-left">
@@ -121,35 +125,69 @@ export default function ClassificationInfoView({ onBack }: ClassificationInfoVie
                   <CslRow
                     level="CSL 1"
                     color="bg-red-100 text-red-800"
-                    description="Högsta skyddsnivå. Komprometterad integritet eller tillgänglighet kan leda till radiologiska konsekvenser utanför anläggningen."
+                    description="Högsta skyddsnivå. Komprometterad integritet eller tillgänglighet kan leda till radiologiska konsekvenser för befolkningen utanför anläggningen."
                     questions="Q16"
                   />
                   <CslRow
                     level="CSL 2"
                     color="bg-orange-100 text-orange-800"
-                    description="Hög skyddsnivå. Komprometterad integritet eller tillgänglighet kan försämra säkerhet under normal drift, försvåra nödlägeshantering, försämra fysiskt skydd eller allvarligt störa huvudprocessen."
+                    description="Hög skyddsnivå. Komprometterad integritet eller tillgänglighet kan försämra nödlägeshantering, säkerhet under normal drift, fysiskt skydd eller huvudprocessens drift."
                     questions="Q17, Q18, Q19, Q20"
                   />
                   <CslRow
                     level="CSL 3"
                     color="bg-yellow-100 text-yellow-800"
-                    description="Medelhög skyddsnivå. Komprometterad integritet eller tillgänglighet kan ge stora drift- eller underhållsproblem, eller tydlig negativ effekt på anläggningens prestanda."
+                    description="Medelhög skyddsnivå. Komprometterad integritet eller tillgänglighet ger inte radiologiska konsekvenser och försämrar inte säkerhet eller fysiskt skydd, men kan ge andra större effekter, till exempel på drift, underhåll eller kraftproduktion."
                     questions="Q21, Q22"
                   />
                   <CslRow
                     level="CSL 4"
                     color="bg-blue-100 text-blue-800"
-                    description="Grundskyddsnivå. Komprometterad integritet eller tillgänglighet kan ge negativa effekter som inte märks direkt men som över tid påverkar verksamheten."
+                    description="Grundskyddsnivå. Komprometterad integritet eller tillgänglighet har ingen kortsiktig effekt på anläggningens prestanda, men kan få sådan effekt på längre sikt."
                     questions="Q23"
                   />
                   <CslRow
                     level="CSL 5"
                     color="bg-green-100 text-green-800"
-                    description="Lägsta skyddsnivå. Komprometterad integritet eller tillgänglighet bedöms inte kunna påverka säkerhet, tillgänglighet eller anläggningens prestanda."
+                    description="Lägsta skyddsnivå. Komprometterad integritet eller tillgänglighet har ingen effekt på säkerhet, anläggningens tillgänglighet eller anläggningens prestanda."
                     questions="Q24"
                   />
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobil: stackade kort */}
+            <div className="space-y-3 sm:hidden">
+              <CslMobileCard
+                level="CSL 1"
+                color="bg-red-100 text-red-800"
+                description="Högsta skyddsnivå. Komprometterad integritet eller tillgänglighet kan leda till radiologiska konsekvenser för befolkningen utanför anläggningen."
+                questions="Q16"
+              />
+              <CslMobileCard
+                level="CSL 2"
+                color="bg-orange-100 text-orange-800"
+                description="Hög skyddsnivå. Komprometterad integritet eller tillgänglighet kan försämra nödlägeshantering, säkerhet under normal drift, fysiskt skydd eller huvudprocessens drift."
+                questions="Q17, Q18, Q19, Q20"
+              />
+              <CslMobileCard
+                level="CSL 3"
+                color="bg-yellow-100 text-yellow-800"
+                description="Medelhög skyddsnivå. Komprometterad integritet eller tillgänglighet ger inte radiologiska konsekvenser och försämrar inte säkerhet eller fysiskt skydd, men kan ge andra större effekter."
+                questions="Q21, Q22"
+              />
+              <CslMobileCard
+                level="CSL 4"
+                color="bg-blue-100 text-blue-800"
+                description="Grundskyddsnivå. Komprometterad integritet eller tillgänglighet har ingen kortsiktig effekt på anläggningens prestanda, men kan få sådan effekt på längre sikt."
+                questions="Q23"
+              />
+              <CslMobileCard
+                level="CSL 5"
+                color="bg-green-100 text-green-800"
+                description="Lägsta skyddsnivå. Komprometterad integritet eller tillgänglighet har ingen effekt på säkerhet, anläggningens tillgänglighet eller anläggningens prestanda."
+                questions="Q24"
+              />
             </div>
           </section>
 
@@ -338,6 +376,28 @@ function RuleCard({ title, description }: { title: string; description: string }
     <div className="rounded-lg border-l-4 border-csl-primary bg-white p-4 shadow-panel">
       <h4 className="text-sm font-semibold text-gray-900">{title}</h4>
       <p className="mt-1 text-sm text-gray-600">{description}</p>
+    </div>
+  );
+}
+
+function CslMobileCard({
+  level,
+  color,
+  description,
+  questions,
+}: {
+  level: string;
+  color: string;
+  description: string;
+  questions: string;
+}) {
+  return (
+    <div className="rounded-lg border bg-white p-3">
+      <div className="flex items-center justify-between">
+        <span className={`inline-block rounded px-2 py-1 text-xs font-bold ${color}`}>{level}</span>
+        <span className="text-xs text-gray-400">{questions}</span>
+      </div>
+      <p className="mt-2 text-xs text-gray-700">{description}</p>
     </div>
   );
 }

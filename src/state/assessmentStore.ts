@@ -2,17 +2,15 @@ import { useReducer, useCallback, useEffect } from 'react';
 import type {
   Answer,
   AnswerValue,
+  CSL,
   FacilityFunction,
   SystemAssessment,
   ClassificationResult,
 } from '../domain/types';
 import type { Question } from '../domain/types';
-import { classifyAssessment } from '../rules/classificationEngine';
+import { classifyAssessment, buildAppliesToMap } from '../rules/classificationEngine';
 import { getBlockingQuestionIds } from '../rules/blockingRules';
-import {
-  resolveActiveFunctions,
-  requiresPrimarySystemSelection,
-} from '../rules/functionResolution';
+import { resolveActiveFunctions } from '../rules/functionResolution';
 import { buildFullDecisionTrace } from '../rules/decisionTrace';
 
 // ─── App-state med flera assessments ─────────────────────────────
@@ -42,7 +40,17 @@ type Action =
     }
   | { type: 'SET_STEP'; payload: number }
   | { type: 'SET_FUNCTIONS'; payload: FacilityFunction[] }
-  | { type: 'CALCULATE_RESULT'; payload: { questions: Question[] } };
+  | { type: 'CALCULATE_RESULT'; payload: { questions: Question[] } }
+  | { type: 'LOAD_EXAMPLE'; payload: { assessment: SystemAssessment } }
+  | {
+      type: 'SET_REQUIREMENT_COMPLIANCE';
+      payload: {
+        paragraph: string;
+        status: import('../domain/types').ComplianceStatus;
+        notes: string;
+      };
+    }
+  | { type: 'IMPORT_STATE'; payload: { assessments: SystemAssessment[] } };
 
 // ─── Hjälpfunktioner ─────────────────────────────────────────────
 function createId(): string {
@@ -139,16 +147,14 @@ function appReducer(state: AppState, action: Action): AppState {
         const blockingIds = getBlockingQuestionIds(questions);
         const activeFunctions =
           a.functions.length > 0 ? a.functions : resolveActiveFunctions(a.answers, questions);
-        const needsPrimary = requiresPrimarySystemSelection(activeFunctions);
-        const q30 = a.answers.find((ans) => ans.questionId === 'Q30');
-        const primaryConfirmed = q30?.value === 'YES';
 
+        const appliesTo = buildAppliesToMap(questions);
         const result = classifyAssessment({
           functions: activeFunctions.map((f) => ({ id: f.id, type: f.type })),
           answers: a.answers,
           blockingQuestionIds: blockingIds,
-          requiresPrimarySystemSelection: needsPrimary,
-          primarySystemConfirmed: primaryConfirmed,
+          appliesTo,
+          questions,
         });
 
         const fullTrace = buildFullDecisionTrace(result);
@@ -156,6 +162,34 @@ function appReducer(state: AppState, action: Action): AppState {
 
         return { ...a, functions: activeFunctions, result: finalResult, updatedAt: now };
       });
+
+    case 'LOAD_EXAMPLE': {
+      const ex = action.payload.assessment;
+      return {
+        assessments: [...state.assessments, ex],
+        activeId: ex.id,
+      };
+    }
+
+    case 'SET_REQUIREMENT_COMPLIANCE':
+      return updateActiveAssessment(state, (a) => {
+        const { paragraph, status, notes } = action.payload;
+        const items = [...(a.requirementCompliance ?? [])];
+        const idx = items.findIndex((i) => i.requirementParagraph === paragraph);
+        const item = { requirementParagraph: paragraph, status, notes };
+        if (idx >= 0) {
+          items[idx] = item;
+        } else {
+          items.push(item);
+        }
+        return { ...a, requirementCompliance: items, updatedAt: now };
+      });
+
+    case 'IMPORT_STATE':
+      return {
+        assessments: action.payload.assessments.map(migrateAssessment),
+        activeId: null,
+      };
 
     default:
       return state;
@@ -165,6 +199,39 @@ function appReducer(state: AppState, action: Action): AppState {
 // ─── localStorage-persistens ─────────────────────────────────────
 const STORAGE_KEY = 'csl-verktyget-assessments';
 const OLD_STORAGE_KEY = 'csl-verktyget-state';
+
+// ─── Migrering v1 → v2 ──────────────────────────────────────────
+function migrateCSL(level: string): string {
+  return level === 'UNRESOLVED' ? 'REVIEW_REQUIRED' : level;
+}
+
+function migrateAssessment(a: SystemAssessment): SystemAssessment {
+  if (a.schemaVersion && a.schemaVersion >= 2) return a;
+  const migrated = { ...a, schemaVersion: 2 };
+  // Ta bort funktioner med type OTHER (borttagen)
+  migrated.functions = migrated.functions.filter((f) => f.type !== ('OTHER' as unknown));
+  if (migrated.result) {
+    const r = { ...migrated.result };
+    // Status: PRELIMINARY_BLOCKED → BLOCKED
+    if ((r.status as string) === 'PRELIMINARY_BLOCKED') {
+      r.status = 'BLOCKED';
+    }
+    // CSL-fält: UNRESOLVED → REVIEW_REQUIRED
+    r.systemLevel = migrateCSL(r.systemLevel) as CSL;
+    r.minimumJustifiedLevel = migrateCSL(r.minimumJustifiedLevel) as CSL;
+    r.highestLevelNotRuledOut = migrateCSL(r.highestLevelNotRuledOut) as CSL;
+    r.functionResults = r.functionResults.map((fr) => ({
+      ...fr,
+      candidateLevel: migrateCSL(fr.candidateLevel) as CSL,
+      levelSource:
+        fr.levelSource ?? (fr.candidateLevel === 'REVIEW_REQUIRED' ? 'PENDING' : 'RULE_ENGINE'),
+    }));
+    // Nya fält med defaults
+    r.analogFallbackNoted = r.analogFallbackNoted ?? false;
+    migrated.result = r;
+  }
+  return migrated;
+}
 
 function loadPersistedState(): AppState {
   try {
@@ -184,7 +251,9 @@ function loadPersistedState(): AppState {
     if (!raw) return { assessments: [], activeId: null };
     const parsed = JSON.parse(raw) as AppState;
     if (!Array.isArray(parsed.assessments)) return { assessments: [], activeId: null };
-    return { assessments: parsed.assessments, activeId: null };
+    // Migrera v1 → v2: UNRESOLVED→REVIEW_REQUIRED, PRELIMINARY_BLOCKED→BLOCKED
+    const migrated = parsed.assessments.map(migrateAssessment);
+    return { assessments: migrated, activeId: null };
   } catch {
     return { assessments: [], activeId: null };
   }
@@ -244,6 +313,44 @@ export function useAssessmentStore() {
     [],
   );
 
+  const loadExample = useCallback(
+    (assessment: SystemAssessment) => dispatch({ type: 'LOAD_EXAMPLE', payload: { assessment } }),
+    [],
+  );
+
+  const setRequirementCompliance = useCallback(
+    (paragraph: string, status: import('../domain/types').ComplianceStatus, notes: string) =>
+      dispatch({ type: 'SET_REQUIREMENT_COMPLIANCE', payload: { paragraph, status, notes } }),
+    [],
+  );
+
+  // ─── Filbaserad sparning/laddning ───────────────────────────
+  const saveToFile = useCallback(() => {
+    const json = JSON.stringify(state, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'cslfacts-data.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [state]);
+
+  const importFromFile = useCallback((file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result as string) as AppState;
+        if (Array.isArray(parsed.assessments)) {
+          dispatch({ type: 'IMPORT_STATE', payload: { assessments: parsed.assessments } });
+        }
+      } catch {
+        // Ogiltig fil — ignorera tyst
+      }
+    };
+    reader.readAsText(file);
+  }, []);
+
   return {
     assessments: state.assessments,
     activeAssessment,
@@ -256,5 +363,9 @@ export function useAssessmentStore() {
     setAnswer,
     setStep,
     calculateResult,
+    loadExample,
+    setRequirementCompliance,
+    saveToFile,
+    importFromFile,
   };
 }

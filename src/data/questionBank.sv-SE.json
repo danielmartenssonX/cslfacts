@@ -250,6 +250,23 @@
       "createsFunctions": ["ADMINISTRATIVE_SUPPORT"]
     },
     {
+      "id": "Q09b",
+      "section": "FUNCTION",
+      "text": "Stöder systemet bokföring, redovisning eller kontroll av kärnämne (NMAC)?",
+      "helpText": "Tänk på om systemet används för att spåra, bokföra eller rapportera kärnämne.",
+      "exampleText": "Exempel: kärnämnesbokföring, materialbokföringssystem, inventeringsstöd.",
+      "answerHelp": {
+        "yes": "Systemet stöder kärnämneskontroll.",
+        "no": "Systemet stöder inte kärnämneskontroll.",
+        "unclear": "Du behöver fråga kärnämnesansvarig."
+      },
+      "blocking": false,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Kärnämnesansvarig", "Säkerhetsansvarig"],
+      "investigationHint": "Fråga kärnämnesansvarig eller säkerhetsansvarig.",
+      "createsFunctions": ["NUCLEAR_MATERIAL_ACCOUNTING_AND_CONTROL"]
+    },
+    {
       "id": "Q16",
       "section": "CONSEQUENCE",
       "text": "Kan fel i systemet bidra till att människor utanför anläggningen kan påverkas av en radiologisk händelse?",
@@ -261,7 +278,7 @@
         "unclear": "Detta måste utredas särskilt noggrant."
       },
       "blocking": true,
-      "appliesTo": ["SAFETY_OPERATION", "MAIN_PROCESS", "EMERGENCY_MANAGEMENT", "OTHER"],
+      "appliesTo": ["SAFETY_OPERATION", "MAIN_PROCESS", "EMERGENCY_MANAGEMENT"],
       "whoCanAnswer": ["Säkerhetsanalytiker", "Processägare", "I&C-specialist"],
       "investigationHint": "Ta in bedömning från säkerhetsanalys, processägare eller I&C-specialist.",
       "candidateLevel": "CSL1"
@@ -329,7 +346,7 @@
         "unclear": "Du behöver fråga processägare eller driftspecialist."
       },
       "blocking": true,
-      "appliesTo": ["MAIN_PROCESS", "SAFETY_OPERATION"],
+      "appliesTo": ["MAIN_PROCESS", "SAFETY_OPERATION", "MAINTENANCE_SUPPORT"],
       "whoCanAnswer": ["Processägare", "Driftspecialist"],
       "investigationHint": "Fråga processägare eller driftspecialist.",
       "candidateLevel": "CSL2"
@@ -380,12 +397,7 @@
         "unclear": "Du behöver fråga verksamhetsägare eller systemägare."
       },
       "blocking": false,
-      "appliesTo": [
-        "ADMINISTRATIVE_SUPPORT",
-        "SENSITIVE_INFORMATION",
-        "MAINTENANCE_SUPPORT",
-        "OTHER"
-      ],
+      "appliesTo": ["ADMINISTRATIVE_SUPPORT", "SENSITIVE_INFORMATION", "MAINTENANCE_SUPPORT"],
       "whoCanAnswer": ["Verksamhetsägare", "Systemägare"],
       "investigationHint": "Fråga verksamhetsägare eller systemägare.",
       "candidateLevel": "CSL4"
@@ -402,7 +414,115 @@
         "unclear": "Du behöver tydligare beskriva konsekvenskedjan."
       },
       "blocking": false,
-      "appliesTo": ["ADMINISTRATIVE_SUPPORT", "OTHER"],
+      "appliesTo": ["ADMINISTRATIVE_SUPPORT", "SENSITIVE_INFORMATION"],
+      "whoCanAnswer": ["Verksamhetsägare", "Systemägare"],
+      "investigationHint": "Kräv tydligare beskrivning av konsekvenskedja.",
+      "candidateLevel": "CSL5"
+    },
+    {
+      "id": "Q16b",
+      "section": "CONSEQUENCE",
+      "text": "Kan fel i systemet direkt eller indirekt bidra till ett händelseförlopp med radiologiska konsekvenser utanför anläggningen?",
+      "helpText": "Denna fråga kompletterar Q16 för funktionstyper som inte täcks direkt. Bedöm om systemets bortfall kan ingå i en kedja som leder till radiologisk konsekvens.",
+      "exampleText": "Exempel: ett skyddssystem vars bortfall i kombination med annat fel kan leda till utsläpp.",
+      "answerHelp": {
+        "yes": "Systemet kan ingå i en sådan kedja.",
+        "no": "Systemet kan inte bidra till radiologiska konsekvenser.",
+        "unclear": "Kräver säkerhetsanalys."
+      },
+      "blocking": true,
+      "appliesTo": [
+        "PHYSICAL_PROTECTION",
+        "MAINTENANCE_SUPPORT",
+        "NUCLEAR_MATERIAL_ACCOUNTING_AND_CONTROL"
+      ],
+      "whoCanAnswer": ["Säkerhetsanalytiker", "I&C-specialist"],
+      "investigationHint": "Kräv säkerhetsanalys som visar eller utesluter bidrag till radiologisk konsekvens.",
+      "candidateLevel": "CSL1"
+    },
+    {
+      "id": "Q18b",
+      "section": "CONSEQUENCE",
+      "text": "Kan fel i systemet försvåra kontrollen av kärnämne på ett sätt som påverkar anläggningens säkerhet eller skydd?",
+      "helpText": "Tänk på om bortfall av kärnämneskontroll kan leda till att material inte spåras korrekt.",
+      "exampleText": "Exempel: materialbokföring, inventering, avvikelserapportering.",
+      "answerHelp": {
+        "yes": "Systemet kan påverka kärnämneskontrollens säkerhetsfunktion.",
+        "no": "Systemet påverkar inte detta.",
+        "unclear": "Kräver utredning med kärnämnesansvarig."
+      },
+      "blocking": true,
+      "appliesTo": ["NUCLEAR_MATERIAL_ACCOUNTING_AND_CONTROL"],
+      "whoCanAnswer": ["Kärnämnesansvarig", "Säkerhetsansvarig"],
+      "investigationHint": "Fråga kärnämnesansvarig.",
+      "candidateLevel": "CSL2"
+    },
+    {
+      "id": "Q21b",
+      "section": "CONSEQUENCE",
+      "text": "Kan fel i systemet ge andra större operativa effekter, även om säkerhet eller fysiskt skydd inte direkt påverkas?",
+      "helpText": "Tänk på om bortfall kan ge stora praktiska konsekvenser utan att direkt påverka säkerhets- eller skyddsfunktioner.",
+      "exampleText": "Exempel: omfattande manuellt merarbete, förlorad förmåga att uppfylla regulatoriska krav, eller stora driftstörningar.",
+      "answerHelp": {
+        "yes": "Systemet kan ge sådana effekter.",
+        "no": "Systemet ger inte sådana effekter.",
+        "unclear": "Kräver verksamhetsanalys."
+      },
+      "blocking": false,
+      "appliesTo": [
+        "SAFETY_OPERATION",
+        "EMERGENCY_MANAGEMENT",
+        "PHYSICAL_PROTECTION",
+        "SENSITIVE_INFORMATION",
+        "NUCLEAR_MATERIAL_ACCOUNTING_AND_CONTROL"
+      ],
+      "whoCanAnswer": ["Verksamhetsägare", "Driftansvarig"],
+      "investigationHint": "Fråga verksamhetsägare om operativa konsekvenser.",
+      "candidateLevel": "CSL3"
+    },
+    {
+      "id": "Q23b",
+      "section": "CONSEQUENCE",
+      "text": "Kan fel i systemet ge negativ effekt på anläggningens prestanda eller förmåga, men först på längre sikt?",
+      "helpText": "Tänk på om konsekvenserna inte märks direkt men byggs upp över tid.",
+      "exampleText": "Exempel: gradvis försämrad datakvalitet, förlorad historik, bristande uppföljning.",
+      "answerHelp": {
+        "yes": "Systemet kan ge långsiktig negativ effekt.",
+        "no": "Systemet ger inte långsiktig effekt.",
+        "unclear": "Kräver verksamhetsanalys."
+      },
+      "blocking": false,
+      "appliesTo": [
+        "SAFETY_OPERATION",
+        "EMERGENCY_MANAGEMENT",
+        "PHYSICAL_PROTECTION",
+        "MAIN_PROCESS",
+        "NUCLEAR_MATERIAL_ACCOUNTING_AND_CONTROL"
+      ],
+      "whoCanAnswer": ["Verksamhetsägare", "Systemägare"],
+      "investigationHint": "Fråga verksamhetsägare om långsiktig påverkan.",
+      "candidateLevel": "CSL4"
+    },
+    {
+      "id": "Q24b",
+      "section": "CONSEQUENCE",
+      "text": "Skulle ett fel i systemet i praktiken inte påverka säkerhet, tillgänglighet, skydd eller anläggningens prestanda?",
+      "helpText": "Svara bara ja om påverkan verkligen är liten eller obefintlig för alla identifierade funktioner.",
+      "exampleText": "Exempel: hjälpfunktioner utan direkt koppling till säker drift eller skydd.",
+      "answerHelp": {
+        "yes": "Systemet har i praktiken ingen relevant påverkan.",
+        "no": "Systemet har ändå relevant påverkan.",
+        "unclear": "Kräver tydligare konsekvenskedja."
+      },
+      "blocking": false,
+      "appliesTo": [
+        "SAFETY_OPERATION",
+        "EMERGENCY_MANAGEMENT",
+        "PHYSICAL_PROTECTION",
+        "MAIN_PROCESS",
+        "MAINTENANCE_SUPPORT",
+        "NUCLEAR_MATERIAL_ACCOUNTING_AND_CONTROL"
+      ],
       "whoCanAnswer": ["Verksamhetsägare", "Systemägare"],
       "investigationHint": "Kräv tydligare beskrivning av konsekvenskedja.",
       "candidateLevel": "CSL5"
@@ -435,7 +555,7 @@
         "unclear": "Du behöver fråga drift eller systemingenjör."
       },
       "blocking": false,
-      "appliesTo": ["SAFETY_OPERATION", "MAIN_PROCESS", "EMERGENCY_MANAGEMENT", "OTHER"],
+      "appliesTo": ["SAFETY_OPERATION", "MAIN_PROCESS", "EMERGENCY_MANAGEMENT"],
       "whoCanAnswer": ["Driftansvarig", "Systemingenjör"],
       "investigationHint": "Fråga drift eller systemingenjör."
     },
@@ -498,7 +618,7 @@
         "no": "Ett annat system är primärt.",
         "unclear": "Du behöver göra en tydligare funktionskartläggning."
       },
-      "blocking": true,
+      "blocking": false,
       "appliesTo": ["ALL"],
       "whoCanAnswer": ["Systemägare", "Arkitekt", "Teknikansvarig"],
       "investigationHint": "Kräv funktionskartläggning och beslut om primärt system."

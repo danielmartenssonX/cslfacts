@@ -4,7 +4,7 @@ import functionCatalogData from '../data/functionCatalog.sv-SE.json';
 const catalog = functionCatalogData.functions as FacilityFunction[];
 
 /**
- * Bestäm vilka funktioner systemet stöder baserat på svar på funktionsfrågor (Q09-Q15).
+ * Bestäm vilka funktioner systemet stöder baserat på svar på funktionsfrågor.
  * Frågor med createsFunctions och answer = YES skapar motsvarande funktion.
  */
 export function resolveActiveFunctions(
@@ -27,11 +27,10 @@ export function resolveActiveFunctions(
 }
 
 /**
- * Kontrollera om flera digitala tillgångar stöder samma funktion,
- * dvs. om primärt system måste pekas ut.
+ * Kontrollera om primärt system behöver väljas.
+ * Verktyget modellerar ännu inte flera digitala tillgångar per funktion,
+ * så denna kontroll returnerar alltid false. Q30 är informationsgivande.
  */
-export function requiresPrimarySystemSelection(functions: FacilityFunction[]): boolean {
-  // Heuristik: om fler än en funktion av samma typ identifieras
-  // I denna version delegeras detta till Q30
-  return functions.length > 1;
+export function requiresPrimarySystemSelection(_functions: FacilityFunction[]): boolean {
+  return false;
 }

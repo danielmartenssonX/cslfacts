@@ -41,6 +41,12 @@
       "type": "ADMINISTRATIVE_SUPPORT",
       "title": "Administrativt stöd",
       "description": "Funktioner som främst är stödjande och inte direkt kopplade till säker drift, skydd eller huvudprocess."
+    },
+    {
+      "id": "NUCLEAR_MATERIAL_ACCOUNTING_AND_CONTROL",
+      "type": "NUCLEAR_MATERIAL_ACCOUNTING_AND_CONTROL",
+      "title": "Kärnämneskontroll (NMAC)",
+      "description": "Funktioner som stöder bokföring, redovisning och kontroll av kärnämne."
     }
   ]
 }

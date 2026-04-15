@@ -1,220 +1,339 @@
 import { describe, expect, it } from 'vitest';
-import { classifyAssessment } from '../../src/rules/classificationEngine';
-import { DEFAULT_BLOCKING_QUESTION_IDS } from '../../src/rules/blockingRules';
-import type { FunctionType } from '../../src/domain/types';
+import {
+  classifyAssessment,
+  buildAppliesToMap,
+  type AppliesToMap,
+} from '../../src/rules/classificationEngine';
+import { getBlockingQuestionIds } from '../../src/rules/blockingRules';
+import type { FunctionType, Question } from '../../src/domain/types';
+import questionBankData from '../../src/data/questionBank.sv-SE.json';
+
+const allQuestions = questionBankData.questions as unknown as Question[];
+const appliesTo: AppliesToMap = buildAppliesToMap(allQuestions);
+const blockingIds = getBlockingQuestionIds(allQuestions);
 
 const fn = (id: string, type: FunctionType) => ({ id, type });
 
-describe('classificationEngine', () => {
-  it('ger CSL1 när Q16 = YES', () => {
-    const result = classifyAssessment({
-      functions: [fn('f1', 'SAFETY_OPERATION')],
-      answers: [{ questionId: 'Q16', functionId: 'f1', value: 'YES' }],
-      blockingQuestionIds: DEFAULT_BLOCKING_QUESTION_IDS,
-      requiresPrimarySystemSelection: false,
-      primarySystemConfirmed: true,
-    });
+function classify(overrides: Partial<Parameters<typeof classifyAssessment>[0]>) {
+  return classifyAssessment({
+    functions: [],
+    answers: [],
+    blockingQuestionIds: blockingIds,
+    appliesTo,
+    questions: allQuestions,
+    ...overrides,
+  });
+}
 
-    expect(result.systemLevel).toBe('CSL1');
-    expect(result.status).toBe('FINAL');
+describe('classificationEngine — nivåtrappa', () => {
+  // ─── SAFETY_OPERATION ─────────────────────────────────────────
+  it('SAFETY_OPERATION → CSL1 via Q16', () => {
+    const r = classify({
+      functions: [fn('f1', 'SAFETY_OPERATION')],
+      answers: [{ questionId: 'Q16', value: 'YES' }],
+    });
+    expect(r.functionResults[0].candidateLevel).toBe('CSL1');
+    expect(r.functionResults[0].levelSource).toBe('RULE_ENGINE');
   });
 
-  it('ger CSL2 när Q17 = YES och Q16 inte är YES', () => {
-    const result = classifyAssessment({
+  it('SAFETY_OPERATION → CSL2 via Q17', () => {
+    const r = classify({
       functions: [fn('f1', 'SAFETY_OPERATION')],
       answers: [
-        { questionId: 'Q16', functionId: 'f1', value: 'NO' },
-        { questionId: 'Q17', functionId: 'f1', value: 'YES' },
+        { questionId: 'Q16', value: 'NO' },
+        { questionId: 'Q17', value: 'YES' },
       ],
-      blockingQuestionIds: DEFAULT_BLOCKING_QUESTION_IDS,
-      requiresPrimarySystemSelection: false,
-      primarySystemConfirmed: true,
     });
-
-    expect(result.systemLevel).toBe('CSL2');
+    expect(r.functionResults[0].candidateLevel).toBe('CSL2');
   });
 
-  it('ger CSL2 när Q18 = YES (nödlägeshantering)', () => {
-    const result = classifyAssessment({
-      functions: [fn('f1', 'EMERGENCY_MANAGEMENT')],
-      answers: [
-        { questionId: 'Q16', functionId: 'f1', value: 'NO' },
-        { questionId: 'Q18', functionId: 'f1', value: 'YES' },
-      ],
-      blockingQuestionIds: DEFAULT_BLOCKING_QUESTION_IDS,
-      requiresPrimarySystemSelection: false,
-      primarySystemConfirmed: true,
+  it('SAFETY_OPERATION → CSL3 via Q21b', () => {
+    const r = classify({
+      functions: [fn('f1', 'SAFETY_OPERATION')],
+      answers: [{ questionId: 'Q21b', value: 'YES' }],
     });
-
-    expect(result.systemLevel).toBe('CSL2');
+    expect(r.functionResults[0].candidateLevel).toBe('CSL3');
   });
 
-  it('ger CSL2 när Q19 = YES (fysiskt skydd)', () => {
-    const result = classifyAssessment({
+  it('SAFETY_OPERATION → CSL4 via Q23b', () => {
+    const r = classify({
+      functions: [fn('f1', 'SAFETY_OPERATION')],
+      answers: [{ questionId: 'Q23b', value: 'YES' }],
+    });
+    expect(r.functionResults[0].candidateLevel).toBe('CSL4');
+  });
+
+  it('SAFETY_OPERATION → CSL5 via Q24b', () => {
+    const r = classify({
+      functions: [fn('f1', 'SAFETY_OPERATION')],
+      answers: [{ questionId: 'Q24b', value: 'YES' }],
+    });
+    expect(r.functionResults[0].candidateLevel).toBe('CSL5');
+  });
+
+  // ─── PHYSICAL_PROTECTION ──────────────────────────────────────
+  it('PHYSICAL_PROTECTION → CSL1 via Q16b', () => {
+    const r = classify({
       functions: [fn('f1', 'PHYSICAL_PROTECTION')],
-      answers: [
-        { questionId: 'Q16', functionId: 'f1', value: 'NO' },
-        { questionId: 'Q19', functionId: 'f1', value: 'YES' },
-      ],
-      blockingQuestionIds: DEFAULT_BLOCKING_QUESTION_IDS,
-      requiresPrimarySystemSelection: false,
-      primarySystemConfirmed: true,
+      answers: [{ questionId: 'Q16b', value: 'YES' }],
     });
-
-    expect(result.systemLevel).toBe('CSL2');
+    expect(r.functionResults[0].candidateLevel).toBe('CSL1');
   });
 
-  it('ger CSL2 när Q20 = YES (huvudprocess)', () => {
-    const result = classifyAssessment({
-      functions: [fn('f1', 'MAIN_PROCESS')],
-      answers: [
-        { questionId: 'Q16', functionId: 'f1', value: 'NO' },
-        { questionId: 'Q20', functionId: 'f1', value: 'YES' },
-      ],
-      blockingQuestionIds: DEFAULT_BLOCKING_QUESTION_IDS,
-      requiresPrimarySystemSelection: false,
-      primarySystemConfirmed: true,
+  it('PHYSICAL_PROTECTION → CSL2 via Q19', () => {
+    const r = classify({
+      functions: [fn('f1', 'PHYSICAL_PROTECTION')],
+      answers: [{ questionId: 'Q19', value: 'YES' }],
     });
-
-    expect(result.systemLevel).toBe('CSL2');
+    expect(r.functionResults[0].candidateLevel).toBe('CSL2');
   });
 
-  it('ger CSL3 när Q21 = YES och högre nivåer inte träffar', () => {
-    const result = classifyAssessment({
+  it('PHYSICAL_PROTECTION → CSL3 via Q21b', () => {
+    const r = classify({
+      functions: [fn('f1', 'PHYSICAL_PROTECTION')],
+      answers: [{ questionId: 'Q21b', value: 'YES' }],
+    });
+    expect(r.functionResults[0].candidateLevel).toBe('CSL3');
+  });
+
+  // ─── NMAC ─────────────────────────────────────────────────────
+  it('NMAC → CSL1 via Q16b', () => {
+    const r = classify({
+      functions: [fn('f1', 'NUCLEAR_MATERIAL_ACCOUNTING_AND_CONTROL')],
+      answers: [{ questionId: 'Q16b', value: 'YES' }],
+    });
+    expect(r.functionResults[0].candidateLevel).toBe('CSL1');
+  });
+
+  it('NMAC → CSL2 via Q18b', () => {
+    const r = classify({
+      functions: [fn('f1', 'NUCLEAR_MATERIAL_ACCOUNTING_AND_CONTROL')],
+      answers: [{ questionId: 'Q18b', value: 'YES' }],
+    });
+    expect(r.functionResults[0].candidateLevel).toBe('CSL2');
+  });
+
+  it('NMAC → CSL5 via Q24b', () => {
+    const r = classify({
+      functions: [fn('f1', 'NUCLEAR_MATERIAL_ACCOUNTING_AND_CONTROL')],
+      answers: [{ questionId: 'Q24b', value: 'YES' }],
+    });
+    expect(r.functionResults[0].candidateLevel).toBe('CSL5');
+  });
+
+  // ─── SENSITIVE_INFORMATION ────────────────────────────────────
+  it('SENSITIVE_INFORMATION → CSL3 via Q21b', () => {
+    const r = classify({
+      functions: [fn('f1', 'SENSITIVE_INFORMATION')],
+      answers: [{ questionId: 'Q21b', value: 'YES' }],
+    });
+    expect(r.functionResults[0].candidateLevel).toBe('CSL3');
+  });
+
+  it('SENSITIVE_INFORMATION → CSL4 via Q23', () => {
+    const r = classify({
+      functions: [fn('f1', 'SENSITIVE_INFORMATION')],
+      answers: [{ questionId: 'Q23', value: 'YES' }],
+    });
+    expect(r.functionResults[0].candidateLevel).toBe('CSL4');
+  });
+
+  it('SENSITIVE_INFORMATION → CSL5 via Q24', () => {
+    const r = classify({
+      functions: [fn('f1', 'SENSITIVE_INFORMATION')],
+      answers: [{ questionId: 'Q24', value: 'YES' }],
+    });
+    expect(r.functionResults[0].candidateLevel).toBe('CSL5');
+  });
+
+  // ─── MAINTENANCE_SUPPORT → CSL2 via Q20 ───────────────────────
+  it('MAINTENANCE_SUPPORT → CSL2 via Q20', () => {
+    const r = classify({
       functions: [fn('f1', 'MAINTENANCE_SUPPORT')],
-      answers: [
-        { questionId: 'Q16', functionId: 'f1', value: 'NO' },
-        { questionId: 'Q17', functionId: 'f1', value: 'NO' },
-        { questionId: 'Q18', functionId: 'f1', value: 'NO' },
-        { questionId: 'Q19', functionId: 'f1', value: 'NO' },
-        { questionId: 'Q20', functionId: 'f1', value: 'NO' },
-        { questionId: 'Q21', functionId: 'f1', value: 'YES' },
-      ],
-      blockingQuestionIds: DEFAULT_BLOCKING_QUESTION_IDS,
-      requiresPrimarySystemSelection: false,
-      primarySystemConfirmed: true,
+      answers: [{ questionId: 'Q20', value: 'YES' }],
     });
-
-    expect(result.systemLevel).toBe('CSL3');
+    expect(r.functionResults[0].candidateLevel).toBe('CSL2');
   });
+});
 
-  it('ger CSL3 när Q22 = YES', () => {
-    const result = classifyAssessment({
-      functions: [fn('f1', 'MAIN_PROCESS')],
-      answers: [{ questionId: 'Q22', functionId: 'f1', value: 'YES' }],
-      blockingQuestionIds: DEFAULT_BLOCKING_QUESTION_IDS,
-      requiresPrimarySystemSelection: false,
-      primarySystemConfirmed: true,
-    });
-
-    expect(result.systemLevel).toBe('CSL3');
-  });
-
-  it('ger CSL4 när endast Q23 = YES', () => {
-    const result = classifyAssessment({
-      functions: [fn('f1', 'ADMINISTRATIVE_SUPPORT')],
-      answers: [{ questionId: 'Q23', functionId: 'f1', value: 'YES' }],
-      blockingQuestionIds: DEFAULT_BLOCKING_QUESTION_IDS,
-      requiresPrimarySystemSelection: false,
-      primarySystemConfirmed: true,
-    });
-
-    expect(result.systemLevel).toBe('CSL4');
-  });
-
-  it('ger CSL5 när endast Q24 = YES', () => {
-    const result = classifyAssessment({
-      functions: [fn('f1', 'ADMINISTRATIVE_SUPPORT')],
-      answers: [{ questionId: 'Q24', functionId: 'f1', value: 'YES' }],
-      blockingQuestionIds: DEFAULT_BLOCKING_QUESTION_IDS,
-      requiresPrimarySystemSelection: false,
-      primarySystemConfirmed: true,
-    });
-
-    expect(result.systemLevel).toBe('CSL5');
-  });
-
-  it('stoppar fastställande när blockerande fråga är UNCLEAR', () => {
-    const result = classifyAssessment({
-      functions: [fn('f1', 'SAFETY_OPERATION')],
-      answers: [{ questionId: 'Q16', functionId: 'f1', value: 'UNCLEAR' }],
-      blockingQuestionIds: DEFAULT_BLOCKING_QUESTION_IDS,
-      requiresPrimarySystemSelection: false,
-      primarySystemConfirmed: true,
-    });
-
-    expect(result.status).toBe('PRELIMINARY_BLOCKED');
-    expect(result.blockingQuestionIds).toContain('Q16');
-  });
-
-  it('väljer mest stringent nivå när flera funktioner finns', () => {
-    const result = classifyAssessment({
-      functions: [fn('f1', 'MAINTENANCE_SUPPORT'), fn('f2', 'SAFETY_OPERATION')],
-      answers: [
-        { questionId: 'Q21', functionId: 'f1', value: 'YES' },
-        { questionId: 'Q17', functionId: 'f2', value: 'YES' },
-      ],
-      blockingQuestionIds: DEFAULT_BLOCKING_QUESTION_IDS,
-      requiresPrimarySystemSelection: false,
-      primarySystemConfirmed: true,
-    });
-
-    expect(result.systemLevel).toBe('CSL2');
-  });
-
-  it('kräver primärt system när flera digitala tillgångar stöder samma funktion', () => {
-    const result = classifyAssessment({
-      functions: [fn('f1', 'MAIN_PROCESS')],
-      answers: [{ questionId: 'Q20', functionId: 'f1', value: 'YES' }],
-      blockingQuestionIds: DEFAULT_BLOCKING_QUESTION_IDS,
-      requiresPrimarySystemSelection: true,
-      primarySystemConfirmed: false,
-    });
-
-    expect(result.status).toBe('PRELIMINARY_BLOCKED');
-    expect(result.blockingQuestionIds).toContain('Q30');
-  });
-
-  it('sänker inte nivå automatiskt bara för att analog fallback finns', () => {
-    const result = classifyAssessment({
-      functions: [fn('f1', 'SAFETY_OPERATION')],
-      answers: [
-        { questionId: 'Q17', functionId: 'f1', value: 'YES' },
-        { questionId: 'Q28', functionId: 'f1', value: 'YES' },
-      ],
-      blockingQuestionIds: DEFAULT_BLOCKING_QUESTION_IDS,
-      requiresPrimarySystemSelection: false,
-      primarySystemConfirmed: true,
-    });
-
-    expect(result.systemLevel).toBe('CSL2');
-  });
-
-  it('flaggar manuell granskning när Q32 = YES', () => {
-    const result = classifyAssessment({
-      functions: [fn('f1', 'ADMINISTRATIVE_SUPPORT')],
-      answers: [
-        { questionId: 'Q24', functionId: 'f1', value: 'YES' },
-        { questionId: 'Q32', value: 'YES' },
-      ],
-      blockingQuestionIds: DEFAULT_BLOCKING_QUESTION_IDS,
-      requiresPrimarySystemSelection: false,
-      primarySystemConfirmed: true,
-    });
-
-    expect(result.manualReviewRequired).toBe(true);
-  });
-
-  it('ger UNRESOLVED om inga konsekvensfrågor besvarats med YES', () => {
-    const result = classifyAssessment({
+describe('classificationEngine — REVIEW_REQUIRED', () => {
+  it('ger REVIEW_REQUIRED om inga konsekvensfrågor besvarats', () => {
+    const r = classify({
       functions: [fn('f1', 'ADMINISTRATIVE_SUPPORT')],
       answers: [],
       blockingQuestionIds: [],
-      requiresPrimarySystemSelection: false,
-      primarySystemConfirmed: true,
     });
+    expect(r.functionResults[0].candidateLevel).toBe('REVIEW_REQUIRED');
+    expect(r.functionResults[0].levelSource).toBe('PENDING');
+    expect(r.status).toBe('REVIEW_REQUIRED');
+  });
 
-    expect(result.systemLevel).toBe('UNRESOLVED');
-    expect(result.status).toBe('PRELIMINARY');
+  it('SENSITIVE_INFORMATION utan matchande svar → REVIEW_REQUIRED', () => {
+    const r = classify({
+      functions: [fn('f1', 'SENSITIVE_INFORMATION')],
+      answers: [],
+      blockingQuestionIds: [],
+    });
+    expect(r.functionResults[0].candidateLevel).toBe('REVIEW_REQUIRED');
+  });
+});
+
+describe('classificationEngine — appliesTo', () => {
+  it('Q19 påverkar inte ADMINISTRATIVE_SUPPORT', () => {
+    const r = classify({
+      functions: [fn('f1', 'ADMINISTRATIVE_SUPPORT')],
+      answers: [
+        { questionId: 'Q19', value: 'YES' },
+        { questionId: 'Q24', value: 'YES' },
+      ],
+    });
+    expect(r.functionResults[0].candidateLevel).toBe('CSL5');
+  });
+
+  it('Q16 påverkar inte PHYSICAL_PROTECTION', () => {
+    const r = classify({
+      functions: [fn('f1', 'PHYSICAL_PROTECTION')],
+      answers: [
+        { questionId: 'Q16', value: 'YES' },
+        { questionId: 'Q19', value: 'YES' },
+      ],
+    });
+    expect(r.functionResults[0].candidateLevel).toBe('CSL2');
+    expect(r.functionResults[0].decisiveQuestionIds).toContain('Q19');
+    expect(r.functionResults[0].decisiveQuestionIds).not.toContain('Q16');
+  });
+
+  it('olika funktioner får olika nivåer', () => {
+    const r = classify({
+      functions: [fn('f1', 'SAFETY_OPERATION'), fn('f2', 'ADMINISTRATIVE_SUPPORT')],
+      answers: [
+        { questionId: 'Q17', value: 'YES' },
+        { questionId: 'Q24', value: 'YES' },
+      ],
+    });
+    expect(
+      r.functionResults.find((f) => f.functionType === 'SAFETY_OPERATION')?.candidateLevel,
+    ).toBe('CSL2');
+    expect(
+      r.functionResults.find((f) => f.functionType === 'ADMINISTRATIVE_SUPPORT')?.candidateLevel,
+    ).toBe('CSL5');
+    expect(r.systemLevel).toBe('CSL2');
+  });
+});
+
+describe('classificationEngine — blockering', () => {
+  it('Q16=UNCLEAR blockerar vid SAFETY_OPERATION', () => {
+    const r = classify({
+      functions: [fn('f1', 'SAFETY_OPERATION')],
+      answers: [{ questionId: 'Q16', value: 'UNCLEAR' }],
+    });
+    expect(r.status).toBe('BLOCKED');
+    expect(r.blockingQuestionIds).toContain('Q16');
+  });
+
+  it('Q16=UNCLEAR blockerar INTE vid ADMINISTRATIVE_SUPPORT (ej tillämplig)', () => {
+    const r = classify({
+      functions: [fn('f1', 'ADMINISTRATIVE_SUPPORT')],
+      answers: [
+        { questionId: 'Q16', value: 'UNCLEAR' },
+        { questionId: 'Q24', value: 'YES' },
+      ],
+    });
+    // Q16 gäller ej ADMINISTRATIVE_SUPPORT → ska inte blockera
+    expect(r.blockingQuestionIds).not.toContain('Q16');
+    expect(r.status).toBe('FINAL');
+  });
+
+  it('Q30=UNCLEAR blockerar INTE (ej längre blockerande)', () => {
+    const r = classify({
+      functions: [fn('f1', 'SAFETY_OPERATION'), fn('f2', 'MAIN_PROCESS')],
+      answers: [
+        { questionId: 'Q17', value: 'YES' },
+        { questionId: 'Q30', value: 'UNCLEAR' },
+      ],
+    });
+    expect(r.blockingQuestionIds).not.toContain('Q30');
+  });
+});
+
+describe('classificationEngine — Q32 specialistgranskning', () => {
+  it('Q32=YES → status REVIEW_REQUIRED, inte FINAL', () => {
+    const r = classify({
+      functions: [fn('f1', 'ADMINISTRATIVE_SUPPORT')],
+      answers: [
+        { questionId: 'Q24', value: 'YES' },
+        { questionId: 'Q32', value: 'YES' },
+      ],
+    });
+    expect(r.manualReviewRequired).toBe(true);
+    expect(r.status).toBe('REVIEW_REQUIRED');
+    expect(r.status).not.toBe('FINAL');
+  });
+
+  it('Q32=UNCLEAR → status REVIEW_REQUIRED', () => {
+    const r = classify({
+      functions: [fn('f1', 'ADMINISTRATIVE_SUPPORT')],
+      answers: [
+        { questionId: 'Q24', value: 'YES' },
+        { questionId: 'Q32', value: 'UNCLEAR' },
+      ],
+    });
+    expect(r.status).toBe('REVIEW_REQUIRED');
+  });
+});
+
+describe('classificationEngine — highestLevelNotRuledOut', () => {
+  it('beräknas baserat på faktisk blockerande fråga, inte alltid CSL1', () => {
+    // Bara Q31 (CONTEXT, ingen candidateLevel) blockerar → borde inte ge CSL1
+    const r = classify({
+      functions: [fn('f1', 'ADMINISTRATIVE_SUPPORT')],
+      answers: [
+        { questionId: 'Q24', value: 'YES' },
+        { questionId: 'Q31', value: 'UNCLEAR' },
+      ],
+    });
+    expect(r.status).toBe('BLOCKED');
+    // Q31 har ingen candidateLevel → highestLevelNotRuledOut = minimumJustifiedLevel
+    expect(r.highestLevelNotRuledOut).toBe(r.minimumJustifiedLevel);
+  });
+});
+
+describe('classificationEngine — mest stringent', () => {
+  it('systemnivå = mest stringenta bland funktioner', () => {
+    const r = classify({
+      functions: [fn('f1', 'MAINTENANCE_SUPPORT'), fn('f2', 'SAFETY_OPERATION')],
+      answers: [
+        { questionId: 'Q21', value: 'YES' },
+        { questionId: 'Q17', value: 'YES' },
+      ],
+    });
+    expect(r.systemLevel).toBe('CSL2');
+  });
+});
+
+describe('classificationEngine — analog fallback', () => {
+  it('Q28=YES noterar fallback men sänker inte nivå', () => {
+    const r = classify({
+      functions: [fn('f1', 'SAFETY_OPERATION')],
+      answers: [
+        { questionId: 'Q17', value: 'YES' },
+        { questionId: 'Q28', value: 'YES' },
+      ],
+    });
+    expect(r.systemLevel).toBe('CSL2');
+    expect(r.analogFallbackNoted).toBe(true);
+  });
+});
+
+describe('classificationEngine — per-funktions-svar', () => {
+  it('funktionsspecifikt svar övertrumfar globalt', () => {
+    const r = classify({
+      functions: [fn('f1', 'SAFETY_OPERATION')],
+      answers: [
+        { questionId: 'Q17', value: 'NO' }, // globalt
+        { questionId: 'Q17', value: 'YES', functionId: 'f1' }, // specifikt
+      ],
+    });
+    expect(r.functionResults[0].candidateLevel).toBe('CSL2');
   });
 });

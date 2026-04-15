@@ -1,11 +1,23 @@
-import { useMemo, useState } from 'react';
-import { Plus, Trash2, ChevronRight, ArrowLeft, Info } from 'lucide-react';
+import { useRef, useMemo, useState } from 'react';
+import {
+  Plus,
+  Trash2,
+  ChevronRight,
+  ChevronDown,
+  ChevronUp,
+  ArrowLeft,
+  Info,
+  BookOpen,
+  Upload,
+  Save,
+} from 'lucide-react';
 import ManualReviewBanner from './components/results/ManualReviewBanner';
 import ClassificationInfoView from './components/info/ClassificationInfoView';
 import { writeConciseSummary, writeDetailedSummary } from './services/summaryWriter';
 import WizardShell from './components/wizard/WizardShell';
 import StepHeader from './components/wizard/StepHeader';
 import QuestionCard from './components/questions/QuestionCard';
+import ConsequenceStepView from './components/questions/ConsequenceStepView';
 import KnownFactsPanel from './components/sidebar/KnownFactsPanel';
 import InvestigationPanel from './components/sidebar/InvestigationPanel';
 import ResultSummary from './components/results/ResultSummary';
@@ -16,6 +28,8 @@ import { downloadMarkdown } from './services/exportMarkdown';
 import { exportPdf } from './services/exportPdf';
 import type { Question, SystemAssessment } from './domain/types';
 import questionBankData from './data/questionBank.sv-SE.json';
+import { EXAMPLE_ASSESSMENTS_META, buildExampleAssessment } from './data/exampleAssessments';
+import RequirementComplianceView from './components/compliance/RequirementComplianceView';
 
 const allQuestions = questionBankData.questions as unknown as Question[];
 
@@ -26,8 +40,10 @@ function statusLabel(assessment: SystemAssessment): string {
   switch (assessment.result.status) {
     case 'FINAL':
       return 'Slutlig';
-    case 'PRELIMINARY_BLOCKED':
-      return 'Preliminär';
+    case 'BLOCKED':
+      return 'Blockerad';
+    case 'REVIEW_REQUIRED':
+      return 'Kräver granskning';
     case 'PRELIMINARY':
       return 'Preliminär';
     default:
@@ -40,12 +56,210 @@ function statusColor(assessment: SystemAssessment): string {
   switch (assessment.result.status) {
     case 'FINAL':
       return 'bg-csl-success/10 text-csl-success';
-    case 'PRELIMINARY_BLOCKED':
+    case 'BLOCKED':
       return 'bg-csl-warning/10 text-csl-warning';
+    case 'REVIEW_REQUIRED':
+      return 'bg-purple-100/10 text-purple-700';
     default:
       return 'bg-gray-100 text-gray-600';
   }
 }
+
+// ─── Ladda fil-knapp ────────────────────────────────────────────
+
+function LoadFileButton({ onImportFile }: { onImportFile: (file: File) => void }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <>
+      <input
+        ref={inputRef}
+        type="file"
+        accept=".json"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) onImportFile(file);
+          if (inputRef.current) inputRef.current.value = '';
+        }}
+      />
+      <button
+        onClick={() => inputRef.current?.click()}
+        className="flex items-center gap-1.5 rounded-lg border border-white/30 bg-white/10 px-4 py-3 text-sm font-medium text-white backdrop-blur-sm hover:bg-white/20"
+      >
+        <Upload size={16} />
+        Ladda sparad fil
+      </button>
+    </>
+  );
+}
+
+// ─── Systembeskrivning & handledning ────────────────────────────
+
+function AboutAndGuideSection() {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className="mx-auto max-w-3xl px-6 pt-8">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="flex w-full items-center gap-3 rounded-lg border-2 border-csl-primary/20 bg-csl-primary/5 px-5 py-4 text-left shadow-sm transition-colors hover:border-csl-primary/40 hover:bg-csl-primary/10"
+      >
+        <BookOpen size={20} className="shrink-0 text-csl-primary" />
+        <div className="flex-1">
+          <span className="text-sm font-semibold text-csl-primary">
+            Om cslFacts &amp; användarhandledning
+          </span>
+          <p className="mt-0.5 text-xs text-gray-500">
+            Systembeskrivning, steg-för-steg-guide och viktig information
+          </p>
+        </div>
+        <span className="text-csl-primary">
+          {expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+        </span>
+      </button>
+
+      {expanded && (
+        <div className="mt-2 rounded-lg border bg-white p-6 shadow-panel">
+          <div className="space-y-6 text-sm text-gray-700">
+            {/* Vad är cslFacts */}
+            <div>
+              <h3 className="mb-2 font-semibold text-csl-primary">Vad är cslFacts?</h3>
+              <p>
+                cslFacts är ett beslutsstöd för klassificering av digitala tillgångar vid
+                kärntekniska anläggningar. Verktyget operationaliserar IAEA Nuclear Security Series
+                No. 17-T (Rev. 1) och hjälper användaren att systematiskt tilldela en Computer
+                Security Level (CSL 1–5) till varje system baserat på dess funktioner och de
+                konsekvenser som kan uppstå om systemets integritet eller tillgänglighet
+                komprometteras.
+              </p>
+              <p className="mt-2">
+                Klassificeringen är helt deterministisk — inga sannolikhetsbedömningar,
+                poängmodeller eller AI-baserade slutledningar. Varje utfall kan spåras tillbaka till
+                exakt vilka svar som gav vilken nivå.
+              </p>
+            </div>
+
+            {/* Steg-för-steg */}
+            <div>
+              <h3 className="mb-2 font-semibold text-csl-primary">
+                Så här fungerar det — steg för steg
+              </h3>
+              <ol className="space-y-2">
+                <GuideStep
+                  n={1}
+                  title="Grundfakta"
+                  text="Ange systemnamn, anläggning och bedömare. Beskriv kort vad systemet gör."
+                />
+                <GuideStep
+                  n={2}
+                  title="Avgränsning och beroenden"
+                  text="Klargör systemets gränser, vad som ingår och vilka beroenden som finns uppströms och nedströms. Blockerande frågor måste besvaras Ja eller Nej."
+                />
+                <GuideStep
+                  n={3}
+                  title="Funktioner"
+                  text='Identifiera vilka funktioner systemet stöder: säker drift, nödlägeshantering, fysiskt skydd, huvudprocess, drift/underhåll, känslig information, administrativt stöd eller kärnämneskontroll. Svara "Ja" på de som gäller.'
+                />
+                <GuideStep
+                  n={4}
+                  title="Konsekvensfrågor"
+                  text="Bedöm konsekvenserna av att systemets integritet eller tillgänglighet komprometteras — separat per funktion. Frågorna är kopplade till CSL-nivåerna i IAEA Annex II."
+                />
+                <GuideStep
+                  n={5}
+                  title="Kontext och komplettering"
+                  text="Besvara kompletterande frågor om skyddsbehov, analog fallback, redundans och primärt system. Q32 flaggar om regelmotorn kan underskatta nivån."
+                />
+                <GuideStep
+                  n={6}
+                  title="Oklarheter"
+                  text='Här visas alla frågor du svarat "Vet inte än" på, med utredningsledtrådar och förslag på vem som kan svara. Blockerande oklarheter måste lösas innan slutlig klassning.'
+                />
+                <GuideStep
+                  n={7}
+                  title="Resultat"
+                  text="Klassificeringsresultatet visas med motivering, beslutskedja och tillämpliga IAEA-krav. Exportera rapporten som JSON, Markdown eller PDF."
+                />
+                <GuideStep
+                  n={8}
+                  title="Kravredovisning (valfritt)"
+                  text="Dokumentera hur systemet uppfyller de IAEA-krav som gäller för den tilldelade CSL-nivån. Markera varje krav som uppfyllt, delvis uppfyllt, ej uppfyllt eller att det måste utredas."
+                />
+              </ol>
+            </div>
+
+            {/* Spara och ladda */}
+            <div>
+              <h3 className="mb-2 font-semibold text-csl-primary">Spara och ladda</h3>
+              <ul className="list-disc space-y-1 pl-5">
+                <li>
+                  Alla bedömningar sparas automatiskt i webbläsaren (localStorage) medan du arbetar.
+                  Du kan stänga appen och återkomma senare utan att förlora data.{' '}
+                  <strong>Observera:</strong> localStorage är bundet till just denna webbläsare och
+                  domän. Om du byter webbläsare, rensar webbläsardata, använder inkognitoläge eller
+                  flyttar till en annan dator försvinner datan. Använd därför{' '}
+                  <strong>&quot;Spara till fil&quot;</strong> regelbundet som säkerhetskopia.
+                </li>
+                <li>
+                  Klicka <strong>&quot;Spara till fil&quot;</strong> (på startsidan eller i
+                  wizardens nederkant) för att ladda ned en <code>cslfacts-data.json</code>-fil med
+                  alla dina bedömningar. Filen innehåller all data — svar, resultat,
+                  kravredovisning.
+                </li>
+                <li>
+                  Klicka <strong>&quot;Ladda sparad fil&quot;</strong> på startsidan för att
+                  återställa bedömningar från en tidigare sparad fil. Det fungerar även på en annan
+                  dator.
+                </li>
+                <li>Inget skickas till någon server. All data stannar lokalt hos dig.</li>
+              </ul>
+            </div>
+
+            {/* Viktigt att veta */}
+            <div>
+              <h3 className="mb-2 font-semibold text-csl-primary">Viktigt att veta</h3>
+              <ul className="list-disc space-y-1 pl-5">
+                <li>
+                  cslFacts är ett <strong>beslutsstöd</strong>, inte ett beslut. Verktyget ersätter
+                  inte verksamhetsansvarig bedömning, specialistgranskning eller formell
+                  fastställelse.
+                </li>
+                <li>
+                  Exempelklassificeringarna nedan är pedagogiska och baserade på IAEA Annex III
+                  Table III-1. De är inte normativa mallar.
+                </li>
+                <li>
+                  I kontextsteget finns en kontrollfråga (Q32) som frågar om det finns anledning att
+                  tro att systemet bör klassas högre än vad verktygets regler föreslår. Om du svarar
+                  &quot;Ja&quot; eller &quot;Vet inte än&quot; markeras bedömningen som &quot;Kräver
+                  specialistgranskning&quot; — den kan då inte fastställas som slutlig förrän en
+                  specialist har granskat och tagit ställning.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function GuideStep({ n, title, text }: { n: number; title: string; text: string }) {
+  return (
+    <li className="flex gap-3">
+      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-csl-primary text-xs font-bold text-white">
+        {n}
+      </span>
+      <div>
+        <span className="font-medium text-gray-900">{title}</span>
+        <span className="text-gray-600"> — {text}</span>
+      </div>
+    </li>
+  );
+}
+
+// ─── Assessment-lista ────────────────────────────────────────────
 
 function AssessmentListView({
   assessments,
@@ -53,12 +267,18 @@ function AssessmentListView({
   onSelect,
   onRemove,
   onShowInfo,
+  onLoadExample,
+  onImportFile,
+  onSave,
 }: {
   assessments: SystemAssessment[];
   onCreate: () => void;
   onSelect: (id: string) => void;
   onRemove: (id: string) => void;
   onShowInfo: () => void;
+  onLoadExample: (exampleId: string) => void;
+  onImportFile: (file: File) => void;
+  onSave: () => void;
 }) {
   return (
     <div className="min-h-screen">
@@ -70,7 +290,7 @@ function AssessmentListView({
         />
         <div className="absolute inset-0 bg-gradient-to-b from-csl-primary/80 via-csl-primary/60 to-csl-background" />
         <div className="relative mx-auto max-w-3xl px-6 pb-12 pt-16">
-          <h1 className="text-3xl font-bold text-white drop-shadow-sm">CSL-verktyget</h1>
+          <h1 className="text-xl font-bold text-white drop-shadow-sm sm:text-3xl">cslFacts</h1>
           <p className="mt-2 max-w-lg text-sm text-white/80">
             Klassificering av digitala tillgångar enligt IAEA NSS 17-T (Rev. 1).
           </p>
@@ -89,9 +309,22 @@ function AssessmentListView({
               <Info size={16} />
               Om klassningen
             </button>
+            <LoadFileButton onImportFile={onImportFile} />
+            {assessments.length > 0 && (
+              <button
+                onClick={onSave}
+                className="flex items-center gap-1.5 rounded-lg border border-white/30 bg-white/10 px-4 py-3 text-sm font-medium text-white backdrop-blur-sm hover:bg-white/20"
+              >
+                <Save size={16} />
+                Spara till fil
+              </button>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Systembeskrivning & handledning */}
+      <AboutAndGuideSection />
 
       {/* Klassningslista */}
       <div className="mx-auto max-w-3xl px-6 py-8">
@@ -151,6 +384,37 @@ function AssessmentListView({
               ))}
           </div>
         )}
+
+        {/* Exempelklassificeringar */}
+        <div className="mt-8 border-t pt-6">
+          <h3 className="mb-1 text-sm font-semibold text-gray-700">
+            Exempelklassificeringar (IAEA Annex III)
+          </h3>
+          <p className="mb-4 text-xs text-gray-500">
+            Pedagogiska exempelobjekt baserade på IAEA NSS 17-T (Rev. 1), Annex III, Table III-1.
+            Anpassade till appens nuvarande klassificeringslogik.
+          </p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {EXAMPLE_ASSESSMENTS_META.map((ex) => (
+              <button
+                key={ex.id}
+                onClick={() => onLoadExample(ex.id)}
+                className="rounded-lg border bg-white p-3 text-left transition-colors hover:border-csl-primary/30 hover:bg-csl-primary/5"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-900">{ex.displayNameSv}</span>
+                  <span className="rounded bg-csl-primary/10 px-2 py-0.5 text-xs font-bold text-csl-primary">
+                    {ex.targetCSL.replace('CSL', 'CSL ')}
+                  </span>
+                </div>
+                <p className="mt-1 text-xs text-gray-500">{ex.fictionalName}</p>
+                {ex.mappingNote && (
+                  <p className="mt-1 text-xs italic text-gray-400">{ex.mappingNote}</p>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -411,6 +675,8 @@ function WizardView({
   setAnswer,
   setStep,
   calculateResult,
+  setRequirementCompliance,
+  saveToFile,
 }: {
   state: SystemAssessment;
   backToList: () => void;
@@ -429,9 +695,15 @@ function WizardView({
   ) => void;
   setStep: (step: number) => void;
   calculateResult: (questions: Question[]) => void;
+  setRequirementCompliance: (
+    paragraph: string,
+    status: import('./domain/types').ComplianceStatus,
+    notes: string,
+  ) => void;
+  saveToFile: () => void;
 }) {
   const completedSteps = useMemo(
-    () => Array.from({ length: 7 }, (_, i) => isStepComplete(state, i, allQuestions)),
+    () => Array.from({ length: 8 }, (_, i) => isStepComplete(state, i, allQuestions)),
     [state],
   );
 
@@ -446,7 +718,7 @@ function WizardView({
     };
   }, [state.result]);
 
-  const canGoNext = state.currentStep < 6;
+  const canGoNext = state.currentStep < 7;
   const canGoPrev = state.currentStep > 0;
 
   // Navigera till steg — omberäkna alltid resultat vid navigering till resultatsteget
@@ -457,7 +729,7 @@ function WizardView({
     setStep(target);
   };
 
-  const handleNext = () => goToStep(Math.min(state.currentStep + 1, 6));
+  const handleNext = () => goToStep(Math.min(state.currentStep + 1, 7));
   const handlePrev = () => goToStep(Math.max(state.currentStep - 1, 0));
 
   const renderStep = () => {
@@ -485,15 +757,7 @@ function WizardView({
           />
         );
       case 3:
-        return (
-          <QuestionSection
-            section="CONSEQUENCE"
-            state={state}
-            setAnswer={setAnswer}
-            subtitle="Bedöm konsekvenserna av fel i systemet per funktion."
-            step={3}
-          />
-        );
+        return <ConsequenceStepView state={state} setAnswer={setAnswer} questions={allQuestions} />;
       case 4:
         return (
           <QuestionSection
@@ -512,6 +776,16 @@ function WizardView({
             state={state}
             enrichedResult={enrichedResult}
             calculateResult={calculateResult}
+          />
+        );
+      case 7:
+        return (
+          <RequirementComplianceView
+            state={state}
+            setRequirementCompliance={setRequirementCompliance}
+            onExportJson={() => downloadJson(state)}
+            onExportMarkdown={() => downloadMarkdown(state)}
+            onExportPdf={() => exportPdf(state)}
           />
         );
       default:
@@ -550,6 +824,7 @@ function WizardView({
           onPrev={handlePrev}
           canGoNext={canGoNext}
           canGoPrev={canGoPrev}
+          onSave={saveToFile}
         >
           {renderStep()}
         </WizardShell>
@@ -576,6 +851,12 @@ export default function App() {
         onSelect={store.select}
         onRemove={store.remove}
         onShowInfo={() => setShowInfo(true)}
+        onLoadExample={(exampleId) => {
+          const assessment = buildExampleAssessment(exampleId);
+          if (assessment) store.loadExample(assessment);
+        }}
+        onImportFile={store.importFromFile}
+        onSave={store.saveToFile}
       />
     );
   }
@@ -589,6 +870,8 @@ export default function App() {
       setAnswer={store.setAnswer}
       setStep={store.setStep}
       calculateResult={store.calculateResult}
+      setRequirementCompliance={store.setRequirementCompliance}
+      saveToFile={store.saveToFile}
     />
   );
 }

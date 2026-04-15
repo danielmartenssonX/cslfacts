@@ -11,7 +11,7 @@ describe('Smoke suite', () => {
     await user.click(screen.getByRole('button', { name: 'Jag förstår' }));
     expect(screen.queryByTestId('secrecy-modal')).not.toBeInTheDocument();
     // Assessment-lista visas
-    expect(screen.getByText('CSL-verktyget')).toBeInTheDocument();
+    expect(screen.getByText('cslFacts')).toBeInTheDocument();
     expect(screen.getByText('Ny klassning')).toBeInTheDocument();
   });
 

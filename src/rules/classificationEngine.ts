@@ -2,12 +2,13 @@ import type {
   Answer,
   ClassificationResult,
   CSL,
-  DecisionTraceItem,
   FunctionAssessmentResult,
   FunctionType,
+  Question,
 } from '../domain/types';
 
-const LEVEL_ORDER: CSL[] = ['CSL1', 'CSL2', 'CSL3', 'CSL4', 'CSL5', 'UNRESOLVED'];
+// ─── Nivåordning (mest stringent först) ─────────────────────────
+const LEVEL_ORDER: CSL[] = ['CSL1', 'CSL2', 'CSL3', 'CSL4', 'CSL5', 'REVIEW_REQUIRED'];
 
 const moreStringent = (a: CSL, b: CSL): CSL => {
   const ia = LEVEL_ORDER.indexOf(a);
@@ -15,21 +16,55 @@ const moreStringent = (a: CSL, b: CSL): CSL => {
   return ia <= ib ? a : b;
 };
 
+// ─── Svarskontroll ──────────────────────────────────────────────
+
 function findAnswer(
   answers: Answer[],
   questionId: string,
   functionId?: string,
 ): Answer | undefined {
-  // Matcha svar med exakt functionId, eller svar utan functionId (globala svar).
-  // Globala svar (functionId undefined) gäller alla funktioner.
-  return answers.find(
-    (a) =>
-      a.questionId === questionId &&
-      (functionId ? a.functionId === functionId || !a.functionId : true),
-  );
+  if (functionId) {
+    // Prioritera funktionsspecifikt svar; faller tillbaka till globalt
+    const specific = answers.find(
+      (a) => a.questionId === questionId && a.functionId === functionId,
+    );
+    if (specific) return specific;
+    return answers.find((a) => a.questionId === questionId && !a.functionId);
+  }
+  return answers.find((a) => a.questionId === questionId);
 }
 
-function yes(answers: Answer[], q: string, functionId?: string): boolean {
+// ─── appliesTo-kontroll ─────────────────────────────────────────
+
+export type AppliesToMap = Record<string, FunctionType[] | ['ALL']>;
+
+export function buildAppliesToMap(questions: Question[]): AppliesToMap {
+  const map: AppliesToMap = {};
+  for (const q of questions) {
+    map[q.id] = q.appliesTo;
+  }
+  return map;
+}
+
+function questionApplies(
+  appliesTo: AppliesToMap,
+  questionId: string,
+  functionType: FunctionType,
+): boolean {
+  const targets = appliesTo[questionId];
+  if (!targets) return true;
+  if (targets[0] === 'ALL') return true;
+  return (targets as FunctionType[]).includes(functionType);
+}
+
+function yes(
+  answers: Answer[],
+  q: string,
+  functionId: string | undefined,
+  functionType: FunctionType,
+  appliesTo: AppliesToMap,
+): boolean {
+  if (!questionApplies(appliesTo, q, functionType)) return false;
   return findAnswer(answers, q, functionId)?.value === 'YES';
 }
 
@@ -37,127 +72,179 @@ function unclear(answers: Answer[], q: string, _functionId?: string): boolean {
   return findAnswer(answers, q, _functionId)?.value === 'UNCLEAR';
 }
 
+// ─── Datadriven nivåkaskad ──────────────────────────────────────
+// Varje nivå listas med sina fråge-ID:n. Kaskaden itereras i ordning;
+// den första nivån där minst en tillämplig fråga besvarats Ja vinner.
+
+const LEVEL_QUESTIONS: { level: Exclude<CSL, 'REVIEW_REQUIRED'>; questionIds: string[] }[] = [
+  { level: 'CSL1', questionIds: ['Q16', 'Q16b'] },
+  { level: 'CSL2', questionIds: ['Q17', 'Q18', 'Q18b', 'Q19', 'Q20'] },
+  { level: 'CSL3', questionIds: ['Q21', 'Q21b', 'Q22'] },
+  { level: 'CSL4', questionIds: ['Q23', 'Q23b'] },
+  { level: 'CSL5', questionIds: ['Q24', 'Q24b'] },
+];
+
+// ─── Klassificering per funktion ────────────────────────────────
+
 export function classifyFunction(
   functionId: string,
   functionType: FunctionType,
   answers: Answer[],
+  appliesTo: AppliesToMap,
 ): FunctionAssessmentResult {
-  const decisiveQuestionIds: string[] = [];
-  const notes: string[] = [];
+  const y = (q: string) => yes(answers, q, functionId, functionType, appliesTo);
 
-  // CSL1: Q16 = Ja
-  if (yes(answers, 'Q16', functionId)) {
-    decisiveQuestionIds.push('Q16');
-    return { functionId, functionType, candidateLevel: 'CSL1', decisiveQuestionIds, notes };
+  for (const tier of LEVEL_QUESTIONS) {
+    const hits = tier.questionIds.filter((qid) => y(qid));
+    if (hits.length > 0) {
+      return {
+        functionId,
+        functionType,
+        candidateLevel: tier.level,
+        levelSource: 'RULE_ENGINE',
+        decisiveQuestionIds: hits,
+        notes: [],
+      };
+    }
   }
 
-  // CSL2: Q17-Q20 = Ja
-  if (
-    yes(answers, 'Q17', functionId) ||
-    yes(answers, 'Q18', functionId) ||
-    yes(answers, 'Q19', functionId) ||
-    yes(answers, 'Q20', functionId)
-  ) {
-    if (yes(answers, 'Q17', functionId)) decisiveQuestionIds.push('Q17');
-    if (yes(answers, 'Q18', functionId)) decisiveQuestionIds.push('Q18');
-    if (yes(answers, 'Q19', functionId)) decisiveQuestionIds.push('Q19');
-    if (yes(answers, 'Q20', functionId)) decisiveQuestionIds.push('Q20');
-    return { functionId, functionType, candidateLevel: 'CSL2', decisiveQuestionIds, notes };
-  }
-
-  // CSL3: Q21-Q22 = Ja
-  if (yes(answers, 'Q21', functionId) || yes(answers, 'Q22', functionId)) {
-    if (yes(answers, 'Q21', functionId)) decisiveQuestionIds.push('Q21');
-    if (yes(answers, 'Q22', functionId)) decisiveQuestionIds.push('Q22');
-    return { functionId, functionType, candidateLevel: 'CSL3', decisiveQuestionIds, notes };
-  }
-
-  // CSL4: Q23 = Ja
-  if (yes(answers, 'Q23', functionId)) {
-    decisiveQuestionIds.push('Q23');
-    return { functionId, functionType, candidateLevel: 'CSL4', decisiveQuestionIds, notes };
-  }
-
-  // CSL5: Q24 = Ja
-  if (yes(answers, 'Q24', functionId)) {
-    decisiveQuestionIds.push('Q24');
-    return { functionId, functionType, candidateLevel: 'CSL5', decisiveQuestionIds, notes };
-  }
-
-  notes.push('Ingen nivå kunde fastställas utifrån tillgängliga svar.');
-  return { functionId, functionType, candidateLevel: 'UNRESOLVED', decisiveQuestionIds, notes };
+  // Ingen nivå kunde fastställas → kräver specialistgranskning
+  return {
+    functionId,
+    functionType,
+    candidateLevel: 'REVIEW_REQUIRED',
+    levelSource: 'PENDING',
+    decisiveQuestionIds: [],
+    notes: ['Ingen nivå kunde fastställas utifrån tillgängliga svar. Specialistgranskning krävs.'],
+  };
 }
+
+// ─── Beräkna highestLevelNotRuledOut ────────────────────────────
+// Baseras på vilka blockerande frågor med candidateLevel som är oklara
+// och som gäller minst en aktiv funktionstyp.
+
+function computeHighestLevelNotRuledOut(
+  blockingHits: string[],
+  currentLevel: CSL,
+  appliesTo: AppliesToMap,
+  activeFunctionTypes: FunctionType[],
+  questions: Question[],
+): CSL {
+  let highest: CSL = currentLevel;
+  for (const qid of blockingHits) {
+    const q = questions.find((x) => x.id === qid);
+    if (!q?.candidateLevel) continue;
+    const applies = activeFunctionTypes.some((ft) => questionApplies(appliesTo, qid, ft));
+    if (applies) {
+      highest = moreStringent(highest, q.candidateLevel);
+    }
+  }
+  return highest;
+}
+
+// ─── Tillämplig blockering ──────────────────────────────────────
+// Blockerande frågor med UNCLEAR som gäller minst en aktiv funktion.
+
+function getApplicableBlockingHits(
+  answers: Answer[],
+  blockingQuestionIds: string[],
+  activeFunctionTypes: FunctionType[],
+  appliesTo: AppliesToMap,
+): string[] {
+  return blockingQuestionIds.filter((qid) => {
+    if (!unclear(answers, qid)) return false;
+    const targets = appliesTo[qid];
+    if (!targets || targets[0] === 'ALL') return true;
+    return activeFunctionTypes.some((ft) => (targets as FunctionType[]).includes(ft));
+  });
+}
+
+// ─── Klassificering av hela bedömningen ─────────────────────────
 
 export function classifyAssessment(params: {
   functions: { id: string; type: FunctionType }[];
   answers: Answer[];
   blockingQuestionIds: string[];
-  requiresPrimarySystemSelection: boolean;
-  primarySystemConfirmed: boolean;
+  appliesTo: AppliesToMap;
+  questions: Question[];
 }): ClassificationResult {
-  const {
-    functions,
+  const { functions, answers, blockingQuestionIds, appliesTo, questions } = params;
+
+  const activeFunctionTypes = functions.map((f) => f.type);
+
+  // Blockerande frågor — bara de som gäller aktiva funktioner
+  const blockingHits = getApplicableBlockingHits(
     answers,
     blockingQuestionIds,
-    requiresPrimarySystemSelection,
-    primarySystemConfirmed,
-  } = params;
+    activeFunctionTypes,
+    appliesTo,
+  );
 
-  const decisionTrace: DecisionTraceItem[] = [];
-  const blockingHits = blockingQuestionIds.filter((q) => unclear(answers, q));
+  // Klassificera varje funktion
+  const functionResults = functions.map((f) => classifyFunction(f.id, f.type, answers, appliesTo));
 
-  if (requiresPrimarySystemSelection && !primarySystemConfirmed && !blockingHits.includes('Q30')) {
-    blockingHits.push('Q30');
-  }
-
-  const functionResults = functions.map((f) => classifyFunction(f.id, f.type, answers));
-
-  let systemLevel: CSL = 'UNRESOLVED';
-
+  // Aggregera systemnivå (mest stringent)
+  let systemLevel: CSL = 'REVIEW_REQUIRED';
   for (const fr of functionResults) {
-    if (fr.candidateLevel === 'UNRESOLVED') continue;
+    if (fr.candidateLevel === 'REVIEW_REQUIRED') continue;
     systemLevel =
-      systemLevel === 'UNRESOLVED'
+      systemLevel === 'REVIEW_REQUIRED'
         ? fr.candidateLevel
         : moreStringent(systemLevel, fr.candidateLevel);
   }
 
-  const manualReviewRequired = yes(answers, 'Q32') || unclear(answers, 'Q32');
+  // Manuell granskning (Q32)
+  const manualReviewRequired =
+    findAnswer(answers, 'Q32')?.value === 'YES' || findAnswer(answers, 'Q32')?.value === 'UNCLEAR';
 
+  // Analog fallback (Q28)
+  const analogFallbackNoted = findAnswer(answers, 'Q28')?.value === 'YES';
+
+  // Nivåintervall
   const minimumJustifiedLevel: CSL = systemLevel;
-  let highestLevelNotRuledOut: CSL = systemLevel === 'UNRESOLVED' ? 'CSL1' : systemLevel;
-
-  if (blockingHits.length > 0) {
-    highestLevelNotRuledOut = 'CSL1';
-    decisionTrace.push({
-      step: 'BLOCKING_CHECK',
-      message: 'Blockerande frågor har svarsvärdet Vet inte än. Resultatet kan inte fastställas.',
-      relatedQuestionIds: blockingHits,
-    });
-  }
-
-  decisionTrace.push({
-    step: 'FUNCTION_RESULTS',
-    message: 'Funktionsresultat har beräknats.',
-    relatedQuestionIds: functionResults.flatMap((f) => f.decisiveQuestionIds),
-  });
-
-  const status =
+  const highestLevelNotRuledOut =
     blockingHits.length > 0
-      ? 'PRELIMINARY_BLOCKED'
-      : systemLevel === 'UNRESOLVED'
-        ? 'PRELIMINARY'
-        : 'FINAL';
+      ? computeHighestLevelNotRuledOut(
+          blockingHits,
+          systemLevel,
+          appliesTo,
+          activeFunctionTypes,
+          questions,
+        )
+      : systemLevel;
+
+  // ─── Statusbestämning ───────────────────────────────────────
+  // BLOCKED: tillämpliga blockerande frågor har oklara svar
+  // REVIEW_REQUIRED: Q32 flaggar eller motor kan inte fastställa nivå
+  // FINAL: allt löst, inget specialistbehov
+  let status: 'DRAFT' | 'PRELIMINARY' | 'BLOCKED' | 'REVIEW_REQUIRED' | 'FINAL';
+  if (blockingHits.length > 0) {
+    status = 'BLOCKED';
+  } else if (manualReviewRequired) {
+    status = 'REVIEW_REQUIRED';
+  } else if (systemLevel === 'REVIEW_REQUIRED') {
+    status = 'REVIEW_REQUIRED';
+  } else if (functionResults.some((fr) => fr.candidateLevel === 'REVIEW_REQUIRED')) {
+    status = 'REVIEW_REQUIRED';
+  } else {
+    status = 'FINAL';
+  }
 
   const conciseRationale =
     status === 'FINAL'
       ? `Systemet har klassats som ${systemLevel} utifrån de funktioner det stöder och de konsekvenser som besvarats med Ja.`
-      : 'Resultatet är preliminärt eftersom viktiga frågor ännu inte är tillräckligt besvarade.';
+      : status === 'BLOCKED'
+        ? 'Klassificeringen kan inte slutföras. Blockerande frågor har oklara svar.'
+        : status === 'REVIEW_REQUIRED'
+          ? 'Bedömningen kräver specialistgranskning innan nivån kan fastställas som slutlig.'
+          : 'Resultatet är preliminärt — fler frågor behöver besvaras.';
 
   const detailedRationale =
     status === 'FINAL'
       ? `Systemnivån har satts till ${systemLevel} eftersom detta är den mest stringenta kandidatnivån bland de identifierade funktionerna.`
-      : 'Slutlig klassificering kan inte fastställas ännu. Blockerande oklarheter eller ofullständig konsekvensbedömning återstår.';
+      : status === 'REVIEW_REQUIRED'
+        ? 'Regelmotorn kan inte fastställa en slutlig nivå. Specialistgranskning krävs innan klassificeringen kan fastställas.'
+        : 'Slutlig klassificering kan inte fastställas ännu. Blockerande oklarheter eller ofullständig konsekvensbedömning återstår.';
 
   return {
     status,
@@ -167,8 +254,9 @@ export function classifyAssessment(params: {
     functionResults,
     blockingQuestionIds: blockingHits,
     manualReviewRequired,
+    analogFallbackNoted,
     conciseRationale,
     detailedRationale,
-    decisionTrace,
+    decisionTrace: [],
   };
 }

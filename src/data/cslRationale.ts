@@ -10,49 +10,49 @@ export interface CslLevelRationale {
   protectionNeed: string;
 }
 
-export const CSL_RATIONALE: Record<Exclude<CSL, 'UNRESOLVED'>, CslLevelRationale> = {
+export const CSL_RATIONALE: Record<Exclude<CSL, 'REVIEW_REQUIRED'>, CslLevelRationale> = {
   CSL1: {
     level: 'CSL 1 – Högsta skyddsnivå',
     iaeaBasis:
-      'Enligt IAEA NSS 17-T (Rev. 1), Annex II: Om komprometterad integritet eller tillgänglighet hos en digital tillgång kan leda till radiologiska konsekvenser utanför anläggningsområdet ska den tilldelas den högsta skyddsnivån.',
+      'Enligt IAEA NSS 17-T (Rev. 1), Annex II: Om komprometterad integritet eller tillgänglighet hos en digital tillgång kan leda till radiologiska konsekvenser för befolkningen utanför anläggningen ska den tilldelas den högsta skyddsnivån.',
     consequence:
-      'Fel, manipulation eller bortfall i systemet kan bidra till händelseförlopp med potentiella radiologiska konsekvenser utanför anläggningen.',
+      'Komprometterad integritet eller tillgänglighet kan leda till radiologiska konsekvenser för befolkningen utanför anläggningen.',
     protectionNeed:
       'Kräver högsta nivå av datasäkerhetsskydd inklusive strikt åtkomstkontroll, kontinuerlig övervakning, härdning, och robust incidenthantering.',
   },
   CSL2: {
     level: 'CSL 2 – Hög skyddsnivå',
     iaeaBasis:
-      'Enligt IAEA NSS 17-T (Rev. 1), Annex II: Om komprometterad integritet eller tillgänglighet kan påverka säker drift, nödlägeshantering, fysiskt skydd eller allvarligt störa huvudprocessen ska systemet tilldelas en hög skyddsnivå.',
+      'Enligt IAEA NSS 17-T (Rev. 1), Annex II: Om komprometterad integritet eller tillgänglighet kan försämra nödlägeshantering, säkerhet under normal drift, fysiskt skydd eller huvudprocessens drift ska systemet tilldelas en hög skyddsnivå.',
     consequence:
-      'Komprometterad integritet eller tillgänglighet kan försämra säkerheten under normal drift, försvåra hantering av nödsituationer, försämra det fysiska skyddet, eller allvarligt störa anläggningens huvudprocess.',
+      'Komprometterad integritet eller tillgänglighet kan försämra nödlägeshantering, säkerhet under normal drift, fysiskt skydd eller huvudprocessens drift.',
     protectionNeed:
       'Kräver hög nivå av datasäkerhetsskydd med åtkomstkontroll, övervakning, segmentering och regelbunden säkerhetsgranskning.',
   },
   CSL3: {
     level: 'CSL 3 – Medelhög skyddsnivå',
     iaeaBasis:
-      'Enligt IAEA NSS 17-T (Rev. 1), Annex II: Om komprometterad integritet eller tillgänglighet kan ge stora drift- eller underhållsproblem, eller tydlig negativ effekt på anläggningens prestanda, utan att direkt påverka den nukleära säkerheten.',
+      'Enligt IAEA NSS 17-T (Rev. 1), Annex II: Om komprometterad integritet eller tillgänglighet inte ger radiologiska konsekvenser och inte försämrar säkerhet eller fysiskt skydd, men kan ge andra större effekter, till exempel på drift, underhåll eller kraftproduktion.',
     consequence:
-      'Komprometterad integritet eller tillgänglighet kan leda till betydande operativa eller underhållsmässiga problem, eller märkbar negativ effekt på produktionskapacitet eller anläggningens prestanda.',
+      'Komprometterad integritet eller tillgänglighet ger inte radiologiska konsekvenser och försämrar inte säkerhet eller fysiskt skydd, men kan ge andra större effekter, till exempel på drift, underhåll eller kraftproduktion.',
     protectionNeed:
       'Kräver medelhög nivå av datasäkerhetsskydd med åtkomstkontroll, loggning och periodisk granskning.',
   },
   CSL4: {
     level: 'CSL 4 – Grundskyddsnivå',
     iaeaBasis:
-      'Enligt IAEA NSS 17-T (Rev. 1), Annex II: Om komprometterad integritet eller tillgänglighet inte ger omedelbara effekter men kan ge negativa konsekvenser på längre sikt.',
+      'Enligt IAEA NSS 17-T (Rev. 1), Annex II: Om komprometterad integritet eller tillgänglighet inte har kortsiktig effekt på anläggningens prestanda, men kan få sådan effekt på längre sikt.',
     consequence:
-      'Komprometterad integritet eller tillgänglighet kan ge negativa effekter som inte märks direkt men som över tid påverkar verksamheten, exempelvis genom gradvis försämrad planering, uppföljning eller dokumentation.',
+      'Komprometterad integritet eller tillgänglighet har ingen kortsiktig effekt på anläggningens prestanda, men kan få sådan effekt på längre sikt.',
     protectionNeed:
       'Kräver grundläggande datasäkerhetsskydd med standardiserad åtkomstkontroll och regelbunden uppdatering.',
   },
   CSL5: {
     level: 'CSL 5 – Lägsta skyddsnivå',
     iaeaBasis:
-      'Enligt IAEA NSS 17-T (Rev. 1), Annex II: Om komprometterad integritet eller tillgänglighet bedöms inte kunna påverka säkerhet, tillgänglighet eller anläggningens prestanda.',
+      'Enligt IAEA NSS 17-T (Rev. 1), Annex II: Om komprometterad integritet eller tillgänglighet inte har effekt på säkerhet, anläggningens tillgänglighet eller anläggningens prestanda.',
     consequence:
-      'Systemet bedöms inte ha relevant påverkan på nukleär säkerhet, fysiskt skydd, nödlägeshantering eller anläggningens operativa förmåga.',
+      'Komprometterad integritet eller tillgänglighet har ingen effekt på säkerhet, anläggningens tillgänglighet eller anläggningens prestanda.',
     protectionNeed:
       'Kräver grundläggande god praxis för datasäkerhet, i linje med organisationens generella IT-säkerhetskrav.',
   },
@@ -62,13 +62,13 @@ export const CSL_RATIONALE: Record<Exclude<CSL, 'UNRESOLVED'>, CslLevelRationale
 
 export interface QuestionRationale {
   yesImplication: string;
-  cslLevel: Exclude<CSL, 'UNRESOLVED'>;
+  cslLevel: Exclude<CSL, 'REVIEW_REQUIRED'>;
 }
 
 export const QUESTION_RATIONALE: Record<string, QuestionRationale> = {
   Q16: {
     yesImplication:
-      'Systemet bedöms kunna bidra till händelseförlopp med radiologiska konsekvenser utanför anläggningen. Enligt IAEA NSS 17-T Annex II motiverar detta den högsta skyddsnivån (CSL 1).',
+      'Komprometterad integritet eller tillgänglighet kan leda till radiologiska konsekvenser för befolkningen utanför anläggningen. Enligt IAEA NSS 17-T Annex II motiverar detta den högsta skyddsnivån (CSL 1).',
     cslLevel: 'CSL1',
   },
   Q17: {
@@ -93,22 +93,48 @@ export const QUESTION_RATIONALE: Record<string, QuestionRationale> = {
   },
   Q21: {
     yesImplication:
-      'Komprometterad integritet eller tillgänglighet kan ge stora drift- eller underhållsproblem utan att direkt påverka den nukleära säkerheten. Enligt Annex II motiverar detta CSL 3.',
+      'Komprometterad integritet eller tillgänglighet ger inte radiologiska konsekvenser och försämrar inte säkerhet eller fysiskt skydd, men kan ge andra större effekter på drift eller underhåll. Enligt Annex II motiverar detta CSL 3.',
     cslLevel: 'CSL3',
   },
   Q22: {
     yesImplication:
-      'Komprometterad integritet eller tillgänglighet kan ge tydlig negativ effekt på anläggningens produktion eller prestanda. Enligt Annex II motiverar detta CSL 3.',
+      'Komprometterad integritet eller tillgänglighet ger inte radiologiska konsekvenser och försämrar inte säkerhet eller fysiskt skydd, men kan ge större effekter på kraftproduktion eller anläggningens prestanda. Enligt Annex II motiverar detta CSL 3.',
     cslLevel: 'CSL3',
   },
   Q23: {
     yesImplication:
-      'Komprometterad integritet eller tillgänglighet kan ge negativa effekter som inte märks direkt men påverkar verksamheten på längre sikt. Enligt Annex II motiverar detta CSL 4.',
+      'Komprometterad integritet eller tillgänglighet har ingen kortsiktig effekt på anläggningens prestanda, men kan få sådan effekt på längre sikt. Enligt Annex II motiverar detta CSL 4.',
     cslLevel: 'CSL4',
   },
   Q24: {
     yesImplication:
-      'Systemet bedöms i praktiken inte kunna påverka säkerhet, tillgänglighet eller anläggningens prestanda. Enligt Annex II motiverar detta den lägsta skyddsnivån (CSL 5).',
+      'Komprometterad integritet eller tillgänglighet har ingen effekt på säkerhet, anläggningens tillgänglighet eller anläggningens prestanda. Enligt Annex II motiverar detta den lägsta skyddsnivån (CSL 5).',
+    cslLevel: 'CSL5',
+  },
+  // ─── Kompletterande frågor (fyller konsekvensvägar) ───────────
+  Q16b: {
+    yesImplication:
+      'Systemet kan direkt eller indirekt bidra till ett händelseförlopp med radiologiska konsekvenser utanför anläggningen. Enligt IAEA NSS 17-T Annex II motiverar detta den högsta skyddsnivån (CSL 1).',
+    cslLevel: 'CSL1',
+  },
+  Q18b: {
+    yesImplication:
+      'Komprometterad kärnämneskontroll kan påverka anläggningens säkerhet eller skydd. Enligt Annex II motiverar detta CSL 2.',
+    cslLevel: 'CSL2',
+  },
+  Q21b: {
+    yesImplication:
+      'Komprometterad integritet eller tillgänglighet kan ge andra större operativa effekter utan direkt påverkan på säkerhet eller fysiskt skydd. Enligt Annex II motiverar detta CSL 3.',
+    cslLevel: 'CSL3',
+  },
+  Q23b: {
+    yesImplication:
+      'Komprometterad integritet eller tillgänglighet har ingen kortsiktig effekt på anläggningens prestanda, men kan få negativ effekt på längre sikt. Enligt Annex II motiverar detta CSL 4.',
+    cslLevel: 'CSL4',
+  },
+  Q24b: {
+    yesImplication:
+      'Komprometterad integritet eller tillgänglighet har ingen effekt på säkerhet, anläggningens tillgänglighet eller anläggningens prestanda. Enligt Annex II motiverar detta den lägsta skyddsnivån (CSL 5).',
     cslLevel: 'CSL5',
   },
 };
@@ -118,8 +144,8 @@ export const QUESTION_RATIONALE: Record<string, QuestionRationale> = {
 export function buildFunctionRationale(fr: FunctionAssessmentResult): string {
   const label = FUNCTION_TYPE_LABELS[fr.functionType] || fr.functionType;
 
-  if (fr.candidateLevel === 'UNRESOLVED') {
-    return `${label}: Ingen CSL-nivå kunde fastställas utifrån tillgängliga svar. Konsekvensbedömningen behöver kompletteras.`;
+  if (fr.candidateLevel === 'REVIEW_REQUIRED') {
+    return `${label}: Ingen CSL-nivå kunde fastställas utifrån tillgängliga svar. Specialistgranskning krävs.`;
   }
 
   const levelRationale = CSL_RATIONALE[fr.candidateLevel];
@@ -151,12 +177,12 @@ export function buildSystemRationale(
   systemLevel: CSL,
   functionResults: FunctionAssessmentResult[],
 ): string {
-  if (systemLevel === 'UNRESOLVED') {
+  if (systemLevel === 'REVIEW_REQUIRED') {
     return 'Systemnivån kunde inte fastställas. Konsekvensbedömningen behöver kompletteras för de identifierade funktionerna.';
   }
 
   const levelRationale = CSL_RATIONALE[systemLevel];
-  const resolvedFunctions = functionResults.filter((fr) => fr.candidateLevel !== 'UNRESOLVED');
+  const resolvedFunctions = functionResults.filter((fr) => fr.candidateLevel !== 'REVIEW_REQUIRED');
 
   if (resolvedFunctions.length === 0) {
     return 'Inga funktioner har bedömts ännu.';

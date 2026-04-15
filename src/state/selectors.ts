@@ -1,5 +1,6 @@
 import type { SystemAssessment, Answer, Question, InvestigationItem } from '../domain/types';
 import { buildInvestigationItems } from '../services/investigationBuilder';
+import { resolveActiveFunctions } from '../rules/functionResolution';
 
 export function getAnswer(
   state: SystemAssessment,
@@ -50,14 +51,35 @@ export function isStepComplete(
       return getAnsweredCount(state, 'SCOPE', questions) === getTotalCount('SCOPE', questions);
     case 2: // Funktioner
       return getAnsweredCount(state, 'FUNCTION', questions) > 0;
-    case 3: // Konsekvensfrågor
-      return getAnsweredCount(state, 'CONSEQUENCE', questions) > 0;
+    case 3: {
+      // Konsekvensfrågor — per funktion (löser funktioner dynamiskt)
+      const activeFunctions =
+        state.functions.length > 0
+          ? state.functions
+          : resolveActiveFunctions(state.answers, questions);
+      if (activeFunctions.length === 0) return false;
+      return activeFunctions.every((func) => {
+        const applicable = questions.filter(
+          (q) =>
+            q.section === 'CONSEQUENCE' &&
+            (q.appliesTo[0] === 'ALL' || q.appliesTo.includes(func.type as never)),
+        );
+        if (applicable.length === 0) return true; // Inga tillämpliga frågor → OK
+        return applicable.some((q) =>
+          state.answers.some(
+            (a) => a.questionId === q.id && (a.functionId === func.id || !a.functionId),
+          ),
+        );
+      });
+    }
     case 4: // Kontext och komplettering
       return getAnsweredCount(state, 'CONTEXT', questions) > 0;
     case 5: // Oklarheter
       return true; // Alltid tillgängligt
     case 6: // Resultat
       return state.result !== null;
+    case 7: // Kravredovisning (valfritt steg — alltid tillgängligt)
+      return true;
     default:
       return false;
   }

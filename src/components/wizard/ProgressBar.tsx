@@ -11,30 +11,44 @@ export default function ProgressBar({
   onStepClick,
   completedSteps,
 }: ProgressBarProps) {
+  const lastStep = STEP_LABELS.length - 1;
+
   return (
     <nav aria-label="Stegindikator" className="mb-6">
       <ol className="flex flex-wrap gap-1">
         {STEP_LABELS.map((label, i) => {
           const isActive = i === currentStep;
           const isCompleted = completedSteps[i];
+          const isOptional = i === lastStep;
+
           return (
             <li key={i} className="flex items-center">
+              {/* Visuell separator före valfritt steg */}
+              {isOptional && (
+                <span className="mx-1.5 hidden text-gray-300 sm:inline" aria-hidden="true">
+                  |
+                </span>
+              )}
               <button
                 onClick={() => onStepClick(i)}
-                className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${
-                  isActive
-                    ? 'bg-csl-primary text-white'
-                    : isCompleted
-                      ? 'bg-csl-success/10 text-csl-success hover:bg-csl-success/20'
-                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                className={`rounded px-2 py-1 text-[10px] font-medium transition-colors sm:px-3 sm:py-1.5 sm:text-xs ${
+                  isOptional
+                    ? isActive
+                      ? 'border border-dashed border-csl-primary bg-csl-primary/10 text-csl-primary'
+                      : 'border border-dashed border-gray-300 bg-white text-gray-400 hover:border-csl-primary/30 hover:text-gray-600'
+                    : isActive
+                      ? 'bg-csl-primary text-white'
+                      : isCompleted
+                        ? 'bg-csl-success/10 text-csl-success hover:bg-csl-success/20'
+                        : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                 }`}
                 aria-current={isActive ? 'step' : undefined}
               >
-                <span className="mr-1">{i + 1}.</span>
-                {label}
+                <span className="mr-0.5 sm:mr-1">{i + 1}.</span>
+                <span className="hidden sm:inline">{label}</span>
               </button>
-              {i < STEP_LABELS.length - 1 && (
-                <span className="mx-1 text-gray-300" aria-hidden="true">
+              {i < lastStep - 1 && (
+                <span className="mx-0.5 hidden text-gray-300 sm:inline" aria-hidden="true">
                   ›
                 </span>
               )}
