@@ -6,7 +6,7 @@
       "id": "Q01",
       "section": "SCOPE",
       "text": "Är systemets användningsområde och syfte tydligt beskrivet?",
-      "helpText": "Tänk på vad systemet faktiskt gör i vardagen. Det räcker inte med ett produktnamn eller tekniskt namn.",
+      "helpText": "En otydlig systembeskrivning försvårar hela klassningen — utan tydligt syfte kan man inte bedöma vilka funktioner systemet stöder eller vilka konsekvenser fel får. Svara Ja bara om det finns dokumentation som konkret beskriver vad systemet gör i drift, inte bara produktnamn eller teknisk specifikation.",
       "exampleText": "Exempel: övervakning, styrning, larm, underhåll, dokumenthantering eller passerkontroll.",
       "answerHelp": {
         "yes": "Ja, användningsområdet och syftet är tydligt dokumenterat.",
@@ -22,7 +22,7 @@
       "id": "Q02",
       "section": "SCOPE",
       "text": "Är systemgränsen tydlig — vad ingår i systemet och vad ligger utanför?",
-      "helpText": "Tänk på systemgränsen. Det ska vara tydligt vilka delar som hör till systemet.",
+      "helpText": "Systemgränsen avgör vad som faktiskt klassificeras. Utan tydlig avgränsning riskerar man att klassa för brett (fel nivå) eller för smalt (missar viktiga delar). Leta efter dokumentation som listar servrar, klienter, nätverksdelar, integrationer och databaser som hör till systemet — och var gränssnitten mot andra system går.",
       "exampleText": "Exempel: servrar, klienter, nätverk, integrationer, databaser och anslutna enheter.",
       "answerHelp": {
         "yes": "Ja, systemgränsen är tydligt definierad och dokumenterad.",
@@ -38,7 +38,7 @@
       "id": "Q03",
       "section": "SCOPE",
       "text": "Är systemets beroenden uppströms kända (system som detta system behöver)?",
-      "helpText": "Tänk på vad systemet behöver för att fungera rätt. Även stödsystem räknas.",
+      "helpText": "Uppströmsberoenden är system som detta system behöver för att fungera. Om de komprometteras kan det indirekt påverka klassningsobjektet. Kartläggningen behövs för att bedöma angreppsvägar och kaskadeffekter. Glöm inte stödsystem som identitetstjänst, tidssynkronisering och logginfrastruktur.",
       "exampleText": "Exempel: identitetstjänst, databas, tidskälla, annat styrsystem eller extern tjänst.",
       "answerHelp": {
         "yes": "Ja, uppströmsberoendena är kartlagda och dokumenterade.",
@@ -54,7 +54,7 @@
       "id": "Q04",
       "section": "SCOPE",
       "text": "Är systemets beroenden nedströms kända (system som beror på detta system)?",
-      "helpText": "Tänk på vad som kan få fel eller sluta fungera om detta system får problem.",
+      "helpText": "Nedströmsberoenden är system eller funktioner som får problem om detta system fallerar. Påverkar direkt konsekvensbedömningen — ju fler nedströmsberoenden, desto större potentiell följdeffekt. Tänk operatörsbilder, larmkedjor, styrsignaler och rapporter som förlitar sig på detta system.",
       "exampleText": "Exempel: operatörsbilder, larmkedjor, rapporter eller annan styrning.",
       "answerHelp": {
         "yes": "Ja, nedströmsberoendena är kartlagda och dokumenterade.",
@@ -70,7 +70,7 @@
       "id": "Q05",
       "section": "SCOPE",
       "text": "Har leverantörer eller andra externa parter åtkomst till systemet?",
-      "helpText": "Tänk på både fjärråtkomst och fysisk serviceåtkomst.",
+      "helpText": "Extern åtkomst är en viktig del av attackytan och påverkar vilka IAEA-krav som blir aktuella (t.ex. 8.20(d) om fjärrunderhåll). Svara Ja om det finns någon form av åtkomst utifrån verksamheten — fjärranslutning via VPN, servicedator som ansluts på plats eller konsultåtkomst. Ett 'nej' förutsätter att åtkomstförhållandena är aktivt utredda, inte bara att man 'tror att' det inte finns någon.",
       "exampleText": "Exempel: support via VPN, servicedator, konsultåtkomst på plats.",
       "answerHelp": {
         "yes": "Ja, externa parter har åtkomst (fjärr eller fysiskt).",
@@ -102,7 +102,7 @@
       "id": "Q07",
       "section": "SCOPE",
       "text": "Har systemet en tydlig huvudfunktion, eller stöder det flera olika funktioner?",
-      "helpText": "Målet är att undvika att ett och samma klassningsobjekt blandar för många olika roller.",
+      "helpText": "Ett system som bär flera olika funktioner (t.ex. både processövervakning och känslig information) klassas utifrån den mest stringenta funktionen — eller bör delas upp. Svara Ja om varje funktion är dokumenterad och avgränsad. Svara Nej om rollerna är sammanblandade utan ordning. Tydlighet här är förutsättning för korrekt konsekvensbedömning i nästa steg.",
       "exampleText": "Exempel: samma system kan både övervaka drift och bära känslig information.",
       "answerHelp": {
         "yes": "Ja, funktionerna är tydligt identifierade och avgränsade.",
@@ -118,7 +118,7 @@
       "id": "Q08",
       "section": "SCOPE",
       "text": "Kan systemet klassificeras som en sammanhållen enhet, eller bör det delas upp i delsystem?",
-      "helpText": "Ibland är det bättre att klassificera delar var för sig än att tvinga in allt i en bedömning.",
+      "helpText": "Ibland är det mer rättvisande att klassa delar separat — en serverdel kan ha andra säkerhetsbehov än en operatörsdel. Uppdelning blir särskilt viktig när delsystem har olika funktioner eller olika konsekvensprofil. Svara Ja om klassningsobjektet är naturligt avgränsat. Svara Nej om uppdelning är mer lämplig — då behöver du gå tillbaka och definiera delsystemen innan klassning låses.",
       "exampleText": "Exempel: separat serverdel, separat operatörsdel eller separat informationsdel.",
       "answerHelp": {
         "yes": "Ja, systemet är en sammanhållen enhet som kan klassificeras som helhet.",
@@ -134,7 +134,7 @@
       "id": "Q09",
       "section": "FUNCTION",
       "text": "Stöder systemet säker drift av anläggningen?",
-      "helpText": "Tänk på om systemet behövs för att anläggningen ska kunna drivas säkert.",
+      "helpText": "Säker drift (safety operation) är den IAEA-definierade funktion som ansvarar för att anläggningen drivs säkert under normal drift. Systemet stöder funktionen om det behövs för säkerhetsrelaterade driftvärden, övervakning, larm eller styrning. Att systemet är driftrelaterat räcker inte — kopplingen ska vara till *säker* drift. Vid tveksamhet: svara Utreds och be drift- eller säkerhetsansvarig bedöma.",
       "exampleText": "Exempel: styrning, övervakning, viktiga driftvärden eller operatörsstöd.",
       "answerHelp": {
         "yes": "Systemet stöder säker drift.",
@@ -151,7 +151,7 @@
       "id": "Q10",
       "section": "FUNCTION",
       "text": "Stöder systemet nödlägeshantering eller krishantering?",
-      "helpText": "Tänk på om systemet används när något allvarligt har hänt eller håller på att hända.",
+      "helpText": "Nödlägeshantering (emergency management) är den funktion som träder in när ett allvarligt läge uppstår eller håller på att uppstå. Frågan gäller operativ roll i händelser — lägesbild, larmning, kommunikation, beslutsstöd eller beredskap. Planering och dokumentation i lugn fas räknas inte — det ska vara system som används operativt när läget är akut.",
       "exampleText": "Exempel: larm, lägesbild, kommunikation eller beredskapsstöd.",
       "answerHelp": {
         "yes": "Systemet stöder nödlägeshantering.",
@@ -168,7 +168,7 @@
       "id": "Q11",
       "section": "FUNCTION",
       "text": "Stöder systemet fysiskt skydd eller skydd mot obehörigt intrång?",
-      "helpText": "Tänk på om systemet hjälper till att skydda anläggningen mot intrång, sabotage eller obehörigt tillträde.",
+      "helpText": "Fysiskt skydd (physical protection) är den funktion som skyddar anläggningen mot intrång, sabotage eller obehörigt tillträde. Systemet stöder funktionen om det aktivt bidrar till skyddet — passersystem, kameraövervakning, larm eller bevakningsstöd. Administrativa system som bara registrerar besök i efterhand räknas normalt inte.",
       "exampleText": "Exempel: passersystem, kameraövervakning, larm eller bevakningsstöd.",
       "answerHelp": {
         "yes": "Systemet stöder fysiskt skydd.",
@@ -185,7 +185,7 @@
       "id": "Q12",
       "section": "FUNCTION",
       "text": "Stöder systemet huvudprocessen eller den centrala anläggningsdriften?",
-      "helpText": "Tänk på om systemet påverkar själva kärnverksamheten, inte bara administration runt omkring.",
+      "helpText": "Huvudprocessen (main nuclear process) är den centrala processen vid anläggningen — reaktor, reaktorhjälpsystem och relaterade driftkritiska funktioner. Svara Ja om systemet påverkar själva processen eller dess direkta övervakning. Administrativa stödsystem runt omkring räknas inte, även om de är driftrelaterade.",
       "exampleText": "Exempel: processnära övervakning, processuppföljning eller driftkritiska hjälpmedel.",
       "answerHelp": {
         "yes": "Systemet stöder huvudprocessen.",
@@ -202,7 +202,7 @@
       "id": "Q13",
       "section": "FUNCTION",
       "text": "Stöder systemet underhåll eller teknisk förmåga på ett sätt som är viktigt för verksamheten?",
-      "helpText": "Tänk på om problem i systemet kan försvåra underhåll, felsökning eller teknisk återställning.",
+      "helpText": "Frågan gäller system vars bortfall skulle försvåra verksamhetens förmåga att underhålla, felsöka eller återställa anläggningen. Svara Ja om problem i systemet skulle få verklig operativ påverkan på underhåll eller teknisk förmåga — inte bara att systemet används för administrativt stöd. Skilj från rena administrativa system (Q15).",
       "exampleText": "Exempel: arbetsorder, reservdelsstyrning, tillståndsuppföljning eller teknikstöd.",
       "answerHelp": {
         "yes": "Systemet stöder drift eller underhåll på ett viktigt sätt.",
@@ -219,7 +219,7 @@
       "id": "Q14",
       "section": "FUNCTION",
       "text": "Hanterar systemet känslig information som inte får spridas?",
-      "helpText": "Tänk på om det viktigaste skyddsbehovet gäller att informationen hålls hemlig.",
+      "helpText": "Frågan identifierar system där informationens konfidentialitet är ett skyddsbehov — skyddsritningar, säkerhetsupplägg, känsliga instruktioner eller planering. Svara Ja om spridning av informationen i sig skulle skada säkerheten. Notera att informationens integritet (korrekthet) eller tillgänglighet kan vara minst lika viktig — det utreds senare i Q25–Q26.",
       "exampleText": "Exempel: skyddsritningar, skyddsupplägg, känsliga instruktioner eller känslig planering.",
       "answerHelp": {
         "yes": "Systemet hanterar känslig information.",
@@ -236,7 +236,7 @@
       "id": "Q15",
       "section": "FUNCTION",
       "text": "Är systemet i huvudsak administrativt eller stödjande utan direkt koppling till säker drift, skydd eller huvudprocess?",
-      "helpText": "Den här frågan hjälper verktyget att skilja kärnfunktioner från rena stödfunktioner.",
+      "helpText": "Denna fråga avgränsar administrativt stöd från kärnfunktioner. Svara Ja för system utan direkt koppling till säker drift, skydd, huvudprocess, nödlägeshantering eller känslig information — alltså rena stöd- och kontorssystem. Om osäker: gå tillbaka till Q09–Q14. Ett system som uppfyller någon av dem är inte rent administrativt.",
       "exampleText": "Exempel: enklare planeringsstöd, kontorsnära system eller generella stödtjänster.",
       "answerHelp": {
         "yes": "Systemet är främst administrativt eller stödjande.",
@@ -253,7 +253,7 @@
       "id": "Q09b",
       "section": "FUNCTION",
       "text": "Stöder systemet bokföring, redovisning eller kontroll av kärnämne (NMAC)?",
-      "helpText": "Tänk på om systemet används för att spåra, bokföra eller rapportera kärnämne.",
+      "helpText": "Kärnämneskontroll (Nuclear Material Accounting and Control) är en IAEA-definierad funktion för bokföring, redovisning och spårning av kärnämne. Svara Ja om systemet används för materialbokföring, inventering, avvikelserapportering eller rapportering till tillsynsmyndighet. Generella inventariesystem räknas inte om de inte specifikt hanterar kärnämne.",
       "exampleText": "Exempel: kärnämnesbokföring, materialbokföringssystem, inventeringsstöd.",
       "answerHelp": {
         "yes": "Systemet stöder kärnämneskontroll.",
@@ -270,7 +270,7 @@
       "id": "Q16",
       "section": "CONSEQUENCE",
       "text": "Kan fel i systemet bidra till att människor utanför anläggningen kan påverkas av en radiologisk händelse?",
-      "helpText": "Tänk på om fel, bortfall eller manipulation i systemet kan bidra till ett mycket allvarligt förlopp.",
+      "helpText": "Detta är det mest stringenta kriteriet i IAEA NSS 17-T Annex II (CSL 1). Svara Ja om systemets fel, bortfall eller manipulation — direkt eller via rimlig händelsekedja — kan bidra till radiologiska konsekvenser för befolkningen utanför anläggningen. Kräver normalt underlag från säkerhetsanalys. Vid tveksamhet: svara Utreds och begär bedömning från säkerhetsanalytiker.",
       "exampleText": "Exempel: system med avgörande betydelse för att förebygga eller hantera mycket allvarliga händelser.",
       "answerHelp": {
         "yes": "Systemet kan ha sådan betydelse.",
@@ -287,7 +287,7 @@
       "id": "Q17",
       "section": "CONSEQUENCE",
       "text": "Kan fel i systemet försämra säkerheten i anläggningen under normal drift?",
-      "helpText": "Tänk på om anläggningen blir mindre säker att köra om systemet visar fel, slutar fungera eller manipuleras.",
+      "helpText": "Frågan gäller säkerheten under normal drift — alltså kan systemets fel göra driftläget mindre säkert? Exempel: felaktiga driftvärden till operatör, bortfall av säkerhetsrelaterad övervakning, manipulerade styrsignaler. Att systemet är driftrelaterat räcker inte — kopplingen ska vara till direkt säkerhetspåverkan.",
       "exampleText": "Exempel: viktiga driftvärden, övervakning, operatörsstöd eller styrsignaler.",
       "answerHelp": {
         "yes": "Systemet kan påverka säker drift.",
@@ -304,7 +304,7 @@
       "id": "Q18",
       "section": "CONSEQUENCE",
       "text": "Kan fel i systemet göra det svårare att hantera en nödsituation?",
-      "helpText": "Tänk på om systemet behövs när ett allvarligt läge uppstår.",
+      "helpText": "Frågan gäller systemets roll när ett allvarligt läge har uppstått. Svara Ja om bortfall skulle försämra förmågan att hantera nödsituationen — förlorad lägesbild, tystade larm, störd kommunikation eller nedsatt beslutsstöd. Planering och beredskapsstöd i lugn fas räknas inte — det ska vara operativ påverkan när läget är akut.",
       "exampleText": "Exempel: larm, lägesbild, kommunikationsstöd eller beslutsstöd i beredskap.",
       "answerHelp": {
         "yes": "Systemet kan försvåra nödlägeshantering om det fallerar.",
@@ -321,7 +321,7 @@
       "id": "Q19",
       "section": "CONSEQUENCE",
       "text": "Kan fel i systemet försämra anläggningens fysiska skydd?",
-      "helpText": "Tänk på om obehöriga lättare skulle kunna ta sig in, röra sig fel eller genomföra sabotage.",
+      "helpText": "Frågan fångar om obehöriga skulle kunna ta sig in, röra sig fel eller genomföra sabotage lättare på grund av felet. Konkreta effekter: passersystem som fallerar, larm som tystnar, kameror som slutar spela in, områdesskydd som slutar larma. Svara Nej om manuella alternativ rimligt kan kompensera under den tid systemet är nere.",
       "exampleText": "Exempel: passage, larm, kamera, områdesskydd eller bevakningsstöd.",
       "answerHelp": {
         "yes": "Systemet kan påverka fysiskt skydd.",
@@ -338,7 +338,7 @@
       "id": "Q20",
       "section": "CONSEQUENCE",
       "text": "Kan fel i systemet störa anläggningens huvudprocess på ett allvarligt sätt?",
-      "helpText": "Tänk på den centrala processen i anläggningen, inte bara besvär eller merarbete.",
+      "helpText": "Frågan gäller allvarlig störning av själva huvudprocessen — inte merarbete eller besvär. Exempel: processövervakning som fallerar så att driften måste stoppas, processuppföljning som ger fel underlag, driftkritisk koordinering som inte fungerar. 'Allvarligt' betyder att driften inte kan fortgå normalt utan systemet.",
       "exampleText": "Exempel: processövervakning, processuppföljning eller driftkritisk koordinering.",
       "answerHelp": {
         "yes": "Systemet kan störa huvudprocessen allvarligt.",
@@ -355,7 +355,7 @@
       "id": "Q21",
       "section": "CONSEQUENCE",
       "text": "Kan fel i systemet ge stora problem i drift eller underhåll även om säkerheten inte direkt påverkas?",
-      "helpText": "Tänk på tydliga verksamhetseffekter som inte gäller säkerhet eller fysiskt skydd men ändå är stora.",
+      "helpText": "Frågan fångar verksamhetseffekter som inte direkt rör säkerhet eller fysiskt skydd, men som ändå är stora. Exempel: svårigheter att underhålla anläggningen, långa driftstörningar, omfattande manuellt merarbete, förlorad förmåga att uppfylla regulatoriska rapporteringskrav. Skilj från Q22 som specifikt gäller produktionspåverkan.",
       "exampleText": "Exempel: svårigheter att underhålla anläggningen, långa driftstörningar eller stor operativ påverkan.",
       "answerHelp": {
         "yes": "Systemet kan ge stora operativa eller underhållsmässiga problem.",
@@ -372,7 +372,7 @@
       "id": "Q22",
       "section": "CONSEQUENCE",
       "text": "Kan fel i systemet få tydlig negativ effekt på elproduktion eller anläggningens prestation?",
-      "helpText": "Tänk på om bortfall eller manipulation kan påverka produktionen eller den operativa förmågan märkbart.",
+      "helpText": "Frågan gäller märkbar effekt på kraftproduktion eller operativ förmåga — alltså kommersiell/operativ påverkan utan direkt säkerhetskoppling. Exempel: bortfall som sänker produktion, system för produktionsoptimering, effektberäkning eller tillgänglighetsrapportering. Skilj från Q21 (drift/underhåll) — fokus här är produktion och prestanda.",
       "exampleText": "Exempel: system där bortfall ger tydlig påverkan på kraftproduktion eller tillgänglighet.",
       "answerHelp": {
         "yes": "Systemet kan ge tydlig negativ effekt.",
@@ -389,7 +389,7 @@
       "id": "Q23",
       "section": "CONSEQUENCE",
       "text": "Skulle fel i systemet främst ge problem först längre fram, snarare än direkt?",
-      "helpText": "Tänk på sådant som inte märks direkt men som över tid kan ge tydliga följder.",
+      "helpText": "Frågan fångar system vars fel inte märks akut men där konsekvenserna byggs upp över tid — försämrad datakvalitet, förlorad historik, uppbyggda fel, bristande uppföljning. Svara Ja om felet inte stör den dagliga driften men gradvis försämrar anläggningens förmåga. System med omedelbara operativa effekter hör under Q17–Q22.",
       "exampleText": "Exempel: gradvis sämre planering, förlorad historik, uppbyggda fel eller försämrad uppföljning.",
       "answerHelp": {
         "yes": "Systemet kan ge långsiktig negativ effekt.",
@@ -406,7 +406,7 @@
       "id": "Q24",
       "section": "CONSEQUENCE",
       "text": "Skulle ett fel i systemet i praktiken inte påverka säkerhet, tillgänglighet eller anläggningens prestation?",
-      "helpText": "Svara bara ja om påverkan verkligen är liten eller obefintlig.",
+      "helpText": "Detta är det minst stringenta kriteriet (CSL 5). Svara Ja endast om påverkan verkligen är försumbar i praktiken — inte bara 'liten'. Vanligt misstag: stödfunktioner som indirekt påverkar viktigare system räknas inte som CSL 5. Om du är osäker: svara Utreds eller gå tillbaka till Q21–Q23.",
       "exampleText": "Exempel: stödfunktioner utan betydelse för säker drift, skydd eller anläggningsprestanda.",
       "answerHelp": {
         "yes": "Systemet har i praktiken ingen relevant påverkan.",
@@ -444,7 +444,7 @@
       "id": "Q18b",
       "section": "CONSEQUENCE",
       "text": "Kan fel i systemet försvåra kontrollen av kärnämne på ett sätt som påverkar anläggningens säkerhet eller skydd?",
-      "helpText": "Tänk på om bortfall av kärnämneskontroll kan leda till att material inte spåras korrekt.",
+      "helpText": "Frågan riktar sig specifikt till NMAC-funktioner. Bortfall av kärnämneskontroll (materialbokföring, inventering, avvikelserapportering) kan leda till att material inte spåras korrekt — vilket kan påverka både säkerhet och fysiskt skydd, t.ex. genom oupptäckta avvikelser. Svara Ja om bortfallet rimligen kan leda till sådan påverkan.",
       "exampleText": "Exempel: materialbokföring, inventering, avvikelserapportering.",
       "answerHelp": {
         "yes": "Systemet kan påverka kärnämneskontrollens säkerhetsfunktion.",
@@ -461,7 +461,7 @@
       "id": "Q21b",
       "section": "CONSEQUENCE",
       "text": "Kan fel i systemet ge andra större operativa effekter, även om säkerhet eller fysiskt skydd inte direkt påverkas?",
-      "helpText": "Tänk på om bortfall kan ge stora praktiska konsekvenser utan att direkt påverka säkerhets- eller skyddsfunktioner.",
+      "helpText": "Detta är en kompletterande CSL 3-fråga för funktionstyper som inte täcks direkt av Q21/Q22. Svara Ja om bortfall kan ge stora praktiska konsekvenser — omfattande manuellt merarbete, förlorad förmåga att uppfylla regulatoriska krav eller stora driftstörningar — men inte direkt påverkar säkerhets- eller skyddsfunktioner.",
       "exampleText": "Exempel: omfattande manuellt merarbete, förlorad förmåga att uppfylla regulatoriska krav, eller stora driftstörningar.",
       "answerHelp": {
         "yes": "Systemet kan ge sådana effekter.",
@@ -484,7 +484,7 @@
       "id": "Q23b",
       "section": "CONSEQUENCE",
       "text": "Kan fel i systemet ge negativ effekt på anläggningens prestanda eller förmåga, men först på längre sikt?",
-      "helpText": "Tänk på om konsekvenserna inte märks direkt men byggs upp över tid.",
+      "helpText": "Kompletterande CSL 4-fråga för funktionstyper som inte täcks av Q23 direkt. Samma princip: konsekvenserna märks inte akut men byggs upp över tid — försämrad datakvalitet, förlorad historik, bristande uppföljning. För funktionstyper som SAFETY_OPERATION, EMERGENCY_MANAGEMENT och PHYSICAL_PROTECTION är detta enda vägen till CSL 4.",
       "exampleText": "Exempel: gradvis försämrad datakvalitet, förlorad historik, bristande uppföljning.",
       "answerHelp": {
         "yes": "Systemet kan ge långsiktig negativ effekt.",
@@ -507,7 +507,7 @@
       "id": "Q24b",
       "section": "CONSEQUENCE",
       "text": "Skulle ett fel i systemet i praktiken inte påverka säkerhet, tillgänglighet, skydd eller anläggningens prestanda?",
-      "helpText": "Svara bara ja om påverkan verkligen är liten eller obefintlig för alla identifierade funktioner.",
+      "helpText": "Kompletterande CSL 5-fråga för funktionstyper som inte täcks av Q24. Samma strikta kriterium: påverkan ska vara försumbar — inte bara liten. Tänk stödfunktioner utan direkt koppling till säker drift, fysiskt skydd eller huvudprocess. Vid minsta tveksamhet: gå tillbaka till Q21b eller Q23b.",
       "exampleText": "Exempel: hjälpfunktioner utan direkt koppling till säker drift eller skydd.",
       "answerHelp": {
         "yes": "Systemet har i praktiken ingen relevant påverkan.",
@@ -531,7 +531,7 @@
       "id": "Q25",
       "section": "CONTEXT",
       "text": "Är det viktigaste skyddsbehovet att informationen hålls hemlig?",
-      "helpText": "Den här frågan används främst för informationssystem där det viktigaste är att information inte sprids.",
+      "helpText": "Frågan gäller specifikt system som hanterar känslig information. Svara Ja om det primära skyddsbehovet är att informationen inte sprids — alltså konfidentialitet. Svara Nej om integritet (korrekthet) eller tillgänglighet är minst lika viktig. Svaret påverkar inte CSL-nivån direkt men ger kontext för kravredovisning och val av skyddsåtgärder.",
       "exampleText": "Exempel: ritningar, skyddsdetaljer, känslig planering eller skyddsinstruktioner.",
       "answerHelp": {
         "yes": "Huvudskyddsbehovet gäller hemlighållande.",
@@ -547,7 +547,7 @@
       "id": "Q26",
       "section": "CONTEXT",
       "text": "Är det viktigaste skyddsbehovet att informationen är korrekt och går att lita på?",
-      "helpText": "Tänk på om felaktig information kan leda till fel beslut eller fel driftåtgärder.",
+      "helpText": "Frågan gäller integritet — att information i systemet är korrekt och pålitlig för att undvika fel beslut eller fel åtgärder. Exempel: processvärden, statusinformation eller larmindikeringar där felaktig information kan leda operatören vilse. Relevant för system där ett korrupt meddelande är värre än att inget meddelande alls kommer fram.",
       "exampleText": "Exempel: processvärden, statusinformation eller larmindikeringar.",
       "answerHelp": {
         "yes": "Korrekthet är särskilt viktig.",
@@ -563,7 +563,7 @@
       "id": "Q27",
       "section": "CONTEXT",
       "text": "Är det viktigt att systemet finns tillgängligt när det behövs?",
-      "helpText": "Tänk på om bortfall i rätt ögonblick skulle få tydliga följder.",
+      "helpText": "Frågan gäller tillgänglighet — att systemet måste fungera i rätt ögonblick för att undvika tydliga följder vid bortfall. Exempel: larm, övervakning, beslutsstöd vid händelse eller processnära stöd. Svara Nej om systemet klarar kortare avbrott utan operativ påverkan. Svaret påverkar hur stränga krav på redundans och tillgänglighet som behöver ställas.",
       "exampleText": "Exempel: larm, övervakning, stöd vid händelse eller processnära stöd.",
       "answerHelp": {
         "yes": "Tillgänglighet är särskilt viktig.",
@@ -611,7 +611,7 @@
       "id": "Q30",
       "section": "CONTEXT",
       "text": "Är detta det primära systemet för den aktuella funktionen?",
-      "helpText": "Om flera digitala tillgångar stöder samma funktion måste ett primärt system ofta pekas ut i klassningen.",
+      "helpText": "Om flera digitala tillgångar stöder samma funktion (t.ex. två parallella styrsystem för samma process) måste ett primärt system pekas ut — det är det som faktiskt utför funktionen i drift. Backupsystem eller reservlösningar klassas separat. Svara Ja om detta är huvudbäraren. Om det bara finns ett system för funktionen är svaret också Ja.",
       "exampleText": "Exempel: två olika system stöder samma funktion men ett är huvudbärare.",
       "answerHelp": {
         "yes": "Detta är det primära systemet för funktionen.",
