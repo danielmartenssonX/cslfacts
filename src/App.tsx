@@ -739,6 +739,7 @@ function WizardView({
       calculateResult(allQuestions);
     }
     setStep(target);
+    window.scrollTo(0, 0);
   };
 
   const handleNext = () => goToStep(Math.min(state.currentStep + 1, 7));
