@@ -218,13 +218,13 @@
     {
       "id": "Q14",
       "section": "FUNCTION",
-      "text": "Hanterar systemet känslig information som inte får spridas?",
-      "helpText": "Frågan identifierar system där informationens konfidentialitet är ett skyddsbehov — skyddsritningar, säkerhetsupplägg, känsliga instruktioner eller planering. Svara Ja om spridning av informationen i sig skulle skada säkerheten. Notera att informationens integritet (korrekthet) eller tillgänglighet kan vara minst lika viktig — det utreds senare i Q25–Q26.",
-      "exampleText": "Exempel: skyddsritningar, skyddsupplägg, känsliga instruktioner eller känslig planering.",
+      "text": "Hanterar eller lagrar systemet känslig information som kan skada nukleär säkerhet om den komprometteras?",
+      "helpText": "Känslig information ('sensitive information assets' enligt IAEA NSS 23-G) är kunskap eller data som har värde för organisationen och vars kompromettering kan skada nukleär säkerhet. Det handlar inte bara om att information inte sprids — även integritet (att den inte förvanskas) och tillgänglighet (att den finns när den behövs) är viktiga. Exempel: design basis threat, säkerhetsplaner, skyddsritningar, hotbedömningar, operativa procedurer, skyddsupplägg, vaktscheman, kryptografiska nycklar eller inloggningsuppgifter. System som stöder fysiskt skydd (Q11) innehåller ofta känslig information i denna mening. Q25–Q27 klargör senare vilken del av CIA-triaden som är viktigast.",
+      "exampleText": "Exempel: design basis threat, säkerhetsplaner, skyddsritningar, hotbedömningar, operativa procedurer, vaktscheman, kryptografiska nycklar.",
       "answerHelp": {
-        "yes": "Systemet hanterar känslig information.",
-        "no": "Systemet hanterar inte sådan information.",
-        "unclear": "Du behöver fråga informationsägare eller säkerhetsansvarig."
+        "yes": "Ja, systemet hanterar eller lagrar känslig information i IAEA:s mening.",
+        "no": "Nej, systemet hanterar inte sådan information.",
+        "unclear": "Behöver utredas — fråga informationsägare eller säkerhetsansvarig."
       },
       "blocking": false,
       "appliesTo": ["ALL"],
@@ -531,7 +531,7 @@
       "id": "Q25",
       "section": "CONTEXT",
       "text": "Är det viktigaste skyddsbehovet att informationen hålls hemlig?",
-      "helpText": "Frågan gäller specifikt system som hanterar känslig information. Svara Ja om det primära skyddsbehovet är att informationen inte sprids — alltså konfidentialitet. Svara Nej om integritet (korrekthet) eller tillgänglighet är minst lika viktig. Svaret påverkar inte CSL-nivån direkt men ger kontext för kravredovisning och val av skyddsåtgärder.",
+      "helpText": "Frågan gäller konfidentialitet — en av tre jämbördiga egenskaper i IAEA:s CIA-triad (konfidentialitet, integritet, tillgänglighet) enligt NSS 23-G. Konfidentialitet betyder att informationen inte görs tillgänglig för obehöriga personer, entiteter eller processer. Exempel där konfidentialitet är primärt: skyddsritningar, hotbedömningar, vaktscheman, kryptografiska nycklar. Notera att konfidentialitet inte automatiskt är viktigast — för drift- och övervakningsdata är integritet och tillgänglighet ofta lika eller mer kritiska. Svaret påverkar inte CSL-nivån direkt men ger kontext för kravredovisning och val av skyddsåtgärder.",
       "exampleText": "Exempel: ritningar, skyddsdetaljer, känslig planering eller skyddsinstruktioner.",
       "answerHelp": {
         "yes": "Huvudskyddsbehovet gäller hemlighållande.",
@@ -547,7 +547,7 @@
       "id": "Q26",
       "section": "CONTEXT",
       "text": "Är det viktigaste skyddsbehovet att informationen är korrekt och går att lita på?",
-      "helpText": "Frågan gäller integritet — att information i systemet är korrekt och pålitlig för att undvika fel beslut eller fel åtgärder. Exempel: processvärden, statusinformation eller larmindikeringar där felaktig information kan leda operatören vilse. Relevant för system där ett korrupt meddelande är värre än att inget meddelande alls kommer fram.",
+      "helpText": "Frågan gäller integritet enligt IAEA NSS 23-G — att information i systemet är korrekt och inte har ändrats eller förvanskats av obehöriga. Viktigt för system där felaktig information kan leda till fel beslut eller fel åtgärder. Exempel: processvärden, statusinformation, larmindikeringar, styrsignaler, materialbokföring. Enligt IAEA räknas integritet som en av tre jämbördiga egenskaper inom informationssäkerhet (CIA-triaden) — inte som sekundär till konfidentialitet. Relevant för system där ett korrupt meddelande är värre än att inget meddelande alls kommer fram.",
       "exampleText": "Exempel: processvärden, statusinformation eller larmindikeringar.",
       "answerHelp": {
         "yes": "Korrekthet är särskilt viktig.",
@@ -563,7 +563,7 @@
       "id": "Q27",
       "section": "CONTEXT",
       "text": "Är det viktigt att systemet finns tillgängligt när det behövs?",
-      "helpText": "Frågan gäller tillgänglighet — att systemet måste fungera i rätt ögonblick för att undvika tydliga följder vid bortfall. Exempel: larm, övervakning, beslutsstöd vid händelse eller processnära stöd. Svara Nej om systemet klarar kortare avbrott utan operativ påverkan. Svaret påverkar hur stränga krav på redundans och tillgänglighet som behöver ställas.",
+      "helpText": "Frågan gäller tillgänglighet enligt IAEA NSS 23-G — att informationen eller systemet är användbart och åtkomligt när en auktoriserad part behöver det. Exempel: larm, övervakning, beslutsstöd vid händelse, processnära stöd. Ett system kan ha högt skyddsbehov även om informationen inte är hemlig — om bortfall i rätt ögonblick får tydliga konsekvenser. Enligt CIA-triaden i NSS 23-G är tillgänglighet jämbördigt med konfidentialitet och integritet. Svara Nej om systemet klarar kortare avbrott utan operativ påverkan. Svaret påverkar hur stränga krav på redundans och tillgänglighet som behöver ställas.",
       "exampleText": "Exempel: larm, övervakning, stöd vid händelse eller processnära stöd.",
       "answerHelp": {
         "yes": "Tillgänglighet är särskilt viktig.",
