@@ -5,7 +5,7 @@
     {
       "id": "Q01",
       "section": "SCOPE",
-      "text": "Vet du vad systemet används till?",
+      "text": "Är systemets användningsområde och syfte tydligt beskrivet?",
       "helpText": "Tänk på vad systemet faktiskt gör i vardagen. Det räcker inte med ett produktnamn eller tekniskt namn.",
       "exampleText": "Exempel: övervakning, styrning, larm, underhåll, dokumenthantering eller passerkontroll.",
       "answerHelp": {
@@ -21,7 +21,7 @@
     {
       "id": "Q02",
       "section": "SCOPE",
-      "text": "Vet du vad som ingår i systemet och vad som ligger utanför?",
+      "text": "Är systemgränsen tydlig — vad ingår i systemet och vad ligger utanför?",
       "helpText": "Tänk på systemgränsen. Det ska vara tydligt vilka delar som hör till systemet.",
       "exampleText": "Exempel: servrar, klienter, nätverk, integrationer, databaser och anslutna enheter.",
       "answerHelp": {
@@ -37,7 +37,7 @@
     {
       "id": "Q03",
       "section": "SCOPE",
-      "text": "Vet du vilka andra system det här systemet är beroende av?",
+      "text": "Är systemets beroenden uppströms kända (system som detta system behöver)?",
       "helpText": "Tänk på vad systemet behöver för att fungera rätt. Även stödsystem räknas.",
       "exampleText": "Exempel: identitetstjänst, databas, tidskälla, annat styrsystem eller extern tjänst.",
       "answerHelp": {
@@ -53,7 +53,7 @@
     {
       "id": "Q04",
       "section": "SCOPE",
-      "text": "Vet du vilka system som är beroende av detta system?",
+      "text": "Är systemets beroenden nedströms kända (system som beror på detta system)?",
       "helpText": "Tänk på vad som kan få fel eller sluta fungera om detta system får problem.",
       "exampleText": "Exempel: operatörsbilder, larmkedjor, rapporter eller annan styrning.",
       "answerHelp": {
@@ -69,7 +69,7 @@
     {
       "id": "Q05",
       "section": "SCOPE",
-      "text": "Vet du om leverantörer eller andra utanför verksamheten kan komma åt systemet?",
+      "text": "Har leverantörer eller andra externa parter åtkomst till systemet?",
       "helpText": "Tänk på både fjärråtkomst och fysisk serviceåtkomst.",
       "exampleText": "Exempel: support via VPN, servicedator, konsultåtkomst på plats.",
       "answerHelp": {
@@ -85,7 +85,7 @@
     {
       "id": "Q06",
       "section": "SCOPE",
-      "text": "Vet du om systemet använder flyttbara medier?",
+      "text": "Används flyttbara medier (USB, bärbara diskar, serviceutrustning) i systemet?",
       "helpText": "Tänk på USB, bärbara hårddiskar, serviceutrustning och temporära lagringsmedia.",
       "exampleText": "Exempel: uppdatering via USB, logguttag eller konfigurationsfiler från bärbar dator.",
       "answerHelp": {
@@ -101,7 +101,7 @@
     {
       "id": "Q07",
       "section": "SCOPE",
-      "text": "Vet du om systemet har en tydlig huvudfunktion eller flera olika funktioner?",
+      "text": "Har systemet en tydlig huvudfunktion, eller stöder det flera olika funktioner?",
       "helpText": "Målet är att undvika att ett och samma klassningsobjekt blandar för många olika roller.",
       "exampleText": "Exempel: samma system kan både övervaka drift och bära känslig information.",
       "answerHelp": {
@@ -117,7 +117,7 @@
     {
       "id": "Q08",
       "section": "SCOPE",
-      "text": "Vet du om systemet kan klassificeras som ett sammanhållet system, eller om det bör delas upp?",
+      "text": "Kan systemet klassificeras som en sammanhållen enhet, eller bör det delas upp i delsystem?",
       "helpText": "Ibland är det bättre att klassificera delar var för sig än att tvinga in allt i en bedömning.",
       "exampleText": "Exempel: separat serverdel, separat operatörsdel eller separat informationsdel.",
       "answerHelp": {
