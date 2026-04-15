@@ -411,9 +411,6 @@ function AssessmentListView({
                   </span>
                 </div>
                 <p className="mt-1 text-xs text-gray-500">{ex.fictionalName}</p>
-                {ex.mappingNote && (
-                  <p className="mt-1 text-xs italic text-gray-400">{ex.mappingNote}</p>
-                )}
               </button>
             ))}
           </div>
@@ -828,6 +825,7 @@ function WizardView({
           canGoNext={canGoNext}
           canGoPrev={canGoPrev}
           onSave={saveToFile}
+          onBack={backToList}
         >
           {renderStep()}
         </WizardShell>
@@ -932,7 +930,11 @@ export default function App() {
           onShowInfo={() => setShowInfo(true)}
           onLoadExample={(exampleId) => {
             const assessment = buildExampleAssessment(exampleId);
-            if (assessment) store.loadExample(assessment);
+            if (assessment) {
+              // Beräkna resultat direkt så att kravredovisningen syns
+              store.loadExample(assessment);
+              store.calculateResult(allQuestions);
+            }
           }}
           onImportFile={store.importFromFile}
           onSave={store.saveToFile}

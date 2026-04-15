@@ -1,21 +1,36 @@
+import { ArrowLeft } from 'lucide-react';
 import { STEP_LABELS } from '../../domain/enums';
 
 interface ProgressBarProps {
   currentStep: number;
   onStepClick: (step: number) => void;
   completedSteps: boolean[];
+  onBack?: () => void;
 }
 
 export default function ProgressBar({
   currentStep,
   onStepClick,
   completedSteps,
+  onBack,
 }: ProgressBarProps) {
   const lastStep = STEP_LABELS.length - 1;
 
   return (
     <nav aria-label="Stegindikator" className="mb-6">
-      <ol className="flex flex-wrap gap-1">
+      <ol className="flex flex-wrap items-center gap-1">
+        {/* Tillbaka-knapp — synlig på mobil, dold på desktop (sidopanelen har egen) */}
+        {onBack && (
+          <li className="mr-1 sm:hidden">
+            <button
+              onClick={onBack}
+              className="flex items-center gap-1 rounded bg-gray-100 px-2 py-1 text-[10px] font-medium text-gray-600 hover:bg-gray-200"
+              aria-label="Tillbaka till listan"
+            >
+              <ArrowLeft size={12} />
+            </button>
+          </li>
+        )}
         {STEP_LABELS.map((label, i) => {
           const isActive = i === currentStep;
           const isCompleted = completedSteps[i];

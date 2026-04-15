@@ -12,6 +12,7 @@ interface WizardShellProps {
   canGoNext: boolean;
   canGoPrev: boolean;
   onSave?: () => void;
+  onBack?: () => void;
 }
 
 export default function WizardShell({
@@ -24,6 +25,7 @@ export default function WizardShell({
   canGoNext,
   canGoPrev,
   onSave,
+  onBack,
 }: WizardShellProps) {
   return (
     <div className="flex min-h-screen flex-col">
@@ -39,6 +41,7 @@ export default function WizardShell({
           currentStep={currentStep}
           onStepClick={onStepClick}
           completedSteps={completedSteps}
+          onBack={onBack}
         />
 
         <div className="mx-auto max-w-content">{children}</div>
