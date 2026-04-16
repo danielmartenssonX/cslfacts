@@ -351,6 +351,19 @@ function RegulatoryNotices({ answers }: { answers: Answer[] }) {
               <span className="ml-2 text-xs font-normal text-gray-400">{note.id}</span>
             </p>
             <p className="mt-1 text-xs text-gray-700">{note.text}</p>
+            {(note.id === 'QR01' || note.id === 'QR02') && (
+              <p className="mt-2 text-xs">
+                <a
+                  href="https://ssb-verktyget.onrender.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-csl-primary underline hover:text-csl-primary/80"
+                >
+                  Stödverktyg för Särskild säkerhetsskyddsbedömning (demo)
+                </a>
+                <span className="ml-1 text-gray-400">Kod: 1234</span>
+              </p>
+            )}
           </div>
         ))}
       </div>
