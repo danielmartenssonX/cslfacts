@@ -152,7 +152,7 @@
       "section": "SCOPE",
       "text": "Är systemet av betydelse för säkerhetskänslig verksamhet, i enlighet med säkerhetsskyddslagen?",
       "helpText": "Säkerhetskänslig verksamhet är verksamhet som är av betydelse för Sveriges säkerhet eller som omfattas av ett internationellt åtagande om säkerhetsskydd. Ett system kan vara av betydelse för säkerhetskänslig verksamhet även utan att det behandlar säkerhetsskyddsklassificerade uppgifter — exempelvis genom att stödja kritiska funktioner. Om svaret är Ja eller Utreds ska systemet bedömas i en Särskild säkerhetsskyddsbedömning.",
-      "exampleText": "Exempel: styrsystem för kärnteknisk process, system för fysiskt skydd, kommunikationssystem för insatsledning.",
+      "exampleText": "Exempel: styrsystem för kärnteknisk process, system för fysiskt skydd.",
       "answerHelp": {
         "yes": "Ja, systemet är av betydelse för säkerhetskänslig verksamhet. Särskild säkerhetsskyddsbedömning krävs.",
         "no": "Nej, systemet har inte sådan betydelse.",
