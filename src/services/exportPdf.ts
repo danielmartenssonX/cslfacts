@@ -169,6 +169,51 @@ export function exportPdf(assessment: SystemAssessment): void {
     addGap(4);
   }
 
+  // Lagkravsnoteringar (QR01-QR05)
+  {
+    const regNotes: string[] = [];
+    const qr01 = assessment.answers.find((a) => a.questionId === 'QR01');
+    const qr02 = assessment.answers.find((a) => a.questionId === 'QR02');
+    const qr03 = assessment.answers.find((a) => a.questionId === 'QR03');
+    const qr04 = assessment.answers.find((a) => a.questionId === 'QR04');
+    const qr05 = assessment.answers.find((a) => a.questionId === 'QR05');
+    if (qr01?.value === 'YES' || qr01?.value === 'UNCLEAR')
+      regNotes.push(
+        'Sakerhetsskyddslagen (QR01): Systemet ska bedomas i en Sarskild sakerhets-skyddsbedomning (SSB).',
+      );
+    if (qr02?.value === 'YES' || qr02?.value === 'UNCLEAR')
+      regNotes.push(
+        'Sakerhetskanslig verksamhet (QR02): Systemet ska bedomas i en Sarskild sakerhets-skyddsbedomning (SSB).',
+      );
+    if (qr03?.value === 'YES')
+      regNotes.push(
+        'Exportkontroll (QR03): Systemet ska kravstallas utifran exportkontrollagstiftningen.',
+      );
+    else if (qr03?.value === 'UNCLEAR')
+      regNotes.push('Exportkontroll (QR03): Oklart om exportkontroll galler. Bor klargoras.');
+    if (qr04?.value === 'YES')
+      regNotes.push('GDPR (QR04): Systemet ska kravstallas utifran dataskyddsforordningen (GDPR).');
+    else if (qr04?.value === 'UNCLEAR')
+      regNotes.push('GDPR (QR04): Oklart om personuppgifter behandlas. Bor klargoras.');
+    if (qr05?.value === 'YES')
+      regNotes.push(
+        'Cybersakerhetslagstiftningen/NIS2 (QR05): Systemet ska kravstallas utifran NIS2-direktivet.',
+      );
+    else if (qr05?.value === 'UNCLEAR')
+      regNotes.push(
+        'Cybersakerhetslagstiftningen/NIS2 (QR05): Oklart om systemet omfattas. Bor klargoras.',
+      );
+    if (regNotes.length > 0) {
+      addLine('Lagkravsnoteringar', 14, true);
+      addGap();
+      for (const rn of regNotes) {
+        addLine(rn);
+        addGap(2);
+      }
+      addGap(4);
+    }
+  }
+
   // Beslutskedja
   addLine('Beslutskedja', 14, true);
   addGap();

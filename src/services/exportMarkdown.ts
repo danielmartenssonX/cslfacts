@@ -190,6 +190,67 @@ export function exportToMarkdown(assessment: SystemAssessment): string {
     }
   }
 
+  // Lagkravsnoteringar (QR01-QR05)
+  {
+    const regulatoryNotes: string[] = [];
+    const qr01 = assessment.answers.find((a) => a.questionId === 'QR01');
+    const qr02 = assessment.answers.find((a) => a.questionId === 'QR02');
+    const qr03 = assessment.answers.find((a) => a.questionId === 'QR03');
+    const qr04 = assessment.answers.find((a) => a.questionId === 'QR04');
+    const qr05 = assessment.answers.find((a) => a.questionId === 'QR05');
+
+    if (qr01?.value === 'YES' || qr01?.value === 'UNCLEAR') {
+      regulatoryNotes.push(
+        '**Säkerhetsskyddslagen (QR01):** Systemet behandlar eller kan behandla säkerhetsskyddsklassificerade uppgifter. Systemet ska bedömas i en Särskild säkerhetsskyddsbedömning (SSB) där föreskrivna krav på säkerhetsskyddsåtgärder fastställs.',
+      );
+    }
+    if (qr02?.value === 'YES' || qr02?.value === 'UNCLEAR') {
+      regulatoryNotes.push(
+        '**Säkerhetskänslig verksamhet (QR02):** Systemet är av betydelse för säkerhetskänslig verksamhet. Systemet ska bedömas i en Särskild säkerhetsskyddsbedömning (SSB) där föreskrivna krav på säkerhetsskyddsåtgärder fastställs.',
+      );
+    }
+    if (qr03?.value === 'YES') {
+      regulatoryNotes.push(
+        '**Exportkontroll (QR03):** Systemet behandlar exportkontrollklassificerad information. Systemet ska även kravställas utifrån exportkontrollagstiftningens särskilda kravställningar.',
+      );
+    } else if (qr03?.value === 'UNCLEAR') {
+      regulatoryNotes.push(
+        '**Exportkontroll (QR03):** Det är oklart om systemet behandlar exportkontrollklassificerad information. Detta bör klargöras.',
+      );
+    }
+    if (qr04?.value === 'YES') {
+      regulatoryNotes.push(
+        '**GDPR (QR04):** Systemet behandlar personuppgifter. Systemet ska även kravställas utifrån dataskyddsförordningens (GDPR) särskilda kravställningar.',
+      );
+    } else if (qr04?.value === 'UNCLEAR') {
+      regulatoryNotes.push(
+        '**GDPR (QR04):** Det är oklart om systemet behandlar personuppgifter. Detta bör klargöras.',
+      );
+    }
+    if (qr05?.value === 'YES') {
+      regulatoryNotes.push(
+        '**Cybersäkerhetslagstiftningen/NIS2 (QR05):** Systemet omfattas av cybersäkerhetslagstiftningen. Systemet ska även kravställas utifrån NIS2-direktivets särskilda kravställningar.',
+      );
+    } else if (qr05?.value === 'UNCLEAR') {
+      regulatoryNotes.push(
+        '**Cybersäkerhetslagstiftningen/NIS2 (QR05):** Det är oklart om systemet omfattas. Detta bör klargöras.',
+      );
+    }
+
+    if (regulatoryNotes.length > 0) {
+      lines.push('## Lagkravsnoteringar');
+      lines.push('');
+      lines.push(
+        '*Följande lagkrav har identifierats utöver CSL-klassningen och bör beaktas vid kravställning.*',
+      );
+      lines.push('');
+      for (const note of regulatoryNotes) {
+        lines.push(note);
+        lines.push('');
+      }
+    }
+  }
+
   // Alla svar per sektion
   lines.push('## Svar');
   lines.push('');

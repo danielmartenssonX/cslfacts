@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import type { ClassificationResult, Question } from '../../domain/types';
+import type { Answer, ClassificationResult, Question } from '../../domain/types';
+import { AlertTriangle } from 'lucide-react';
 import { CSL_LABELS } from '../../domain/enums';
 import { CSL_RATIONALE } from '../../data/cslRationale';
 import { getApplicableRequirements, getRequirementLevelLabel } from '../../data/cslRequirements';
@@ -12,6 +13,7 @@ import ManualReviewBanner from './ManualReviewBanner';
 interface ResultSummaryProps {
   result: ClassificationResult;
   questions: Question[];
+  answers: Answer[];
   onExportJson: () => void;
   onExportMarkdown: () => void;
   onExportPdf: () => void;
@@ -50,6 +52,7 @@ function statusColor(status: string): string {
 export default function ResultSummary({
   result,
   questions,
+  answers,
   onExportJson,
   onExportMarkdown,
   onExportPdf,
@@ -150,6 +153,9 @@ export default function ResultSummary({
       {/* Beslutslogg */}
       <DecisionTraceView trace={result.decisionTrace} />
 
+      {/* Lagkravsnoteringar */}
+      <RegulatoryNotices answers={answers} />
+
       {/* Export */}
       <div className="flex gap-3 border-t pt-4">
         <button
@@ -244,6 +250,110 @@ function RequirementsSection({ systemLevel }: { systemLevel: import('../../domai
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+// ─── Lagkravsnoteringar ─────────────────────────────────────────
+
+interface RegulatoryNote {
+  id: string;
+  title: string;
+  text: string;
+  severity: 'high' | 'medium';
+}
+
+function RegulatoryNotices({ answers }: { answers: Answer[] }) {
+  const notes: RegulatoryNote[] = [];
+  const val = (qid: string) => answers.find((a) => a.questionId === qid)?.value;
+
+  if (val('QR01') === 'YES' || val('QR01') === 'UNCLEAR') {
+    notes.push({
+      id: 'QR01',
+      title: 'Säkerhetsskyddslagen',
+      text: 'Systemet behandlar eller kan behandla säkerhetsskyddsklassificerade uppgifter. Systemet ska bedömas i en Särskild säkerhetsskyddsbedömning (SSB) där föreskrivna krav på säkerhetsskyddsåtgärder fastställs.',
+      severity: 'high',
+    });
+  }
+  if (val('QR02') === 'YES' || val('QR02') === 'UNCLEAR') {
+    notes.push({
+      id: 'QR02',
+      title: 'Säkerhetskänslig verksamhet',
+      text: 'Systemet är av betydelse för säkerhetskänslig verksamhet. Systemet ska bedömas i en Särskild säkerhetsskyddsbedömning (SSB) där föreskrivna krav på säkerhetsskyddsåtgärder fastställs.',
+      severity: 'high',
+    });
+  }
+  if (val('QR03') === 'YES') {
+    notes.push({
+      id: 'QR03',
+      title: 'Exportkontroll',
+      text: 'Systemet behandlar exportkontrollklassificerad information. Systemet ska även kravställas utifrån exportkontrollagstiftningens särskilda kravställningar.',
+      severity: 'medium',
+    });
+  } else if (val('QR03') === 'UNCLEAR') {
+    notes.push({
+      id: 'QR03',
+      title: 'Exportkontroll',
+      text: 'Det är oklart om systemet behandlar exportkontrollklassificerad information. Detta bör klargöras.',
+      severity: 'medium',
+    });
+  }
+  if (val('QR04') === 'YES') {
+    notes.push({
+      id: 'QR04',
+      title: 'GDPR',
+      text: 'Systemet behandlar personuppgifter. Systemet ska även kravställas utifrån dataskyddsförordningens (GDPR) särskilda kravställningar.',
+      severity: 'medium',
+    });
+  } else if (val('QR04') === 'UNCLEAR') {
+    notes.push({
+      id: 'QR04',
+      title: 'GDPR',
+      text: 'Det är oklart om systemet behandlar personuppgifter. Detta bör klargöras.',
+      severity: 'medium',
+    });
+  }
+  if (val('QR05') === 'YES') {
+    notes.push({
+      id: 'QR05',
+      title: 'Cybersäkerhetslagstiftningen (NIS2)',
+      text: 'Systemet omfattas av cybersäkerhetslagstiftningen. Systemet ska även kravställas utifrån NIS2-direktivets särskilda kravställningar.',
+      severity: 'medium',
+    });
+  } else if (val('QR05') === 'UNCLEAR') {
+    notes.push({
+      id: 'QR05',
+      title: 'Cybersäkerhetslagstiftningen (NIS2)',
+      text: 'Det är oklart om systemet omfattas av cybersäkerhetslagstiftningen. Detta bör klargöras.',
+      severity: 'medium',
+    });
+  }
+
+  if (notes.length === 0) return null;
+
+  return (
+    <div>
+      <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-csl-primary">
+        <AlertTriangle size={16} />
+        Lagkravsnoteringar
+      </h3>
+      <p className="mb-3 text-xs text-gray-500">
+        Följande lagkrav har identifierats utöver CSL-klassningen och bör beaktas vid kravställning.
+      </p>
+      <div className="space-y-2">
+        {notes.map((note) => (
+          <div
+            key={note.id}
+            className={`rounded-lg border p-3 ${note.severity === 'high' ? 'border-red-200 bg-red-50' : 'border-amber-200 bg-amber-50'}`}
+          >
+            <p className="text-sm font-medium text-gray-900">
+              {note.title}
+              <span className="ml-2 text-xs font-normal text-gray-400">{note.id}</span>
+            </p>
+            <p className="mt-1 text-xs text-gray-700">{note.text}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

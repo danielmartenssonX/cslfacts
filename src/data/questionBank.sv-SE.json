@@ -131,6 +131,91 @@
       "investigationHint": "Ta fram logisk indelning och föreslå delsystem."
     },
     {
+      "id": "QR01",
+      "section": "SCOPE",
+      "text": "Är systemet avsett att behandla säkerhetsskyddsklassificerade uppgifter, i enlighet med säkerhetsskyddslagen?",
+      "helpText": "Säkerhetsskyddsklassificerade uppgifter är information som rör Sveriges säkerhet och som har tilldelats en sekretessklass (kvalificerat hemlig, hemlig, konfidentiell eller begränsat hemlig). Om systemet behandlar sådana uppgifter ska det bedömas i en Särskild säkerhetsskyddsbedömning (SSB) där föreskrivna krav på säkerhetsskyddsåtgärder fastställs. CSL-klassningen ersätter inte SSB — de kompletterar varandra.",
+      "exampleText": "Exempel: system som hanterar totalförsvarsplanering, sekretessbelagd designinformation, säkerhetsskyddsplaner eller kvalificerat hemliga handlingar.",
+      "answerHelp": {
+        "yes": "Ja, systemet behandlar säkerhetsskyddsklassificerade uppgifter. Särskild säkerhetsskyddsbedömning krävs.",
+        "no": "Nej, systemet behandlar inte sådana uppgifter.",
+        "unclear": "Behöver utredas — kontakta säkerhetsskyddschef."
+      },
+      "blocking": false,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Säkerhetsskyddschef", "Informationsägare", "Säkerhetsansvarig"],
+      "investigationHint": "Kontakta säkerhetsskyddschef för att klargöra om systemet behandlar säkerhetsskyddsklassificerade uppgifter.",
+      "notes": "Tilläggsfråga utanför CSL-modellen. Påverkar inte CSL-nivå men flaggar krav på Särskild säkerhetsskyddsbedömning."
+    },
+    {
+      "id": "QR02",
+      "section": "SCOPE",
+      "text": "Är systemet av betydelse för säkerhetskänslig verksamhet, i enlighet med säkerhetsskyddslagen?",
+      "helpText": "Säkerhetskänslig verksamhet är verksamhet som är av betydelse för Sveriges säkerhet eller som omfattas av ett internationellt åtagande om säkerhetsskydd. Ett system kan vara av betydelse för säkerhetskänslig verksamhet även utan att det behandlar säkerhetsskyddsklassificerade uppgifter — exempelvis genom att stödja kritiska funktioner. Om svaret är Ja eller Utreds ska systemet bedömas i en Särskild säkerhetsskyddsbedömning.",
+      "exampleText": "Exempel: styrsystem för kärnteknisk process, system för fysiskt skydd, kommunikationssystem för insatsledning.",
+      "answerHelp": {
+        "yes": "Ja, systemet är av betydelse för säkerhetskänslig verksamhet. Särskild säkerhetsskyddsbedömning krävs.",
+        "no": "Nej, systemet har inte sådan betydelse.",
+        "unclear": "Behöver utredas — kontakta säkerhetsskyddschef."
+      },
+      "blocking": false,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Säkerhetsskyddschef", "Verksamhetsägare", "Säkerhetsansvarig"],
+      "investigationHint": "Kontakta säkerhetsskyddschef för att klargöra om systemet är av betydelse för säkerhetskänslig verksamhet.",
+      "notes": "Tilläggsfråga utanför CSL-modellen. Påverkar inte CSL-nivå men flaggar krav på Särskild säkerhetsskyddsbedömning."
+    },
+    {
+      "id": "QR03",
+      "section": "SCOPE",
+      "text": "Är systemet avsett att behandla exportkontrollklassificerad information?",
+      "helpText": "Exportkontrollklassificerad information omfattar teknisk data, programvara och teknologi som regleras av exportkontrollagstiftningen (t.ex. EU:s dual use-förordning, svenska krigsmateriellagen eller amerikanska ITAR/EAR). Om systemet behandlar sådan information gäller särskilda krav på åtkomstkontroll, spårbarhet och hantering som kompletterar CSL-kraven.",
+      "exampleText": "Exempel: konstruktionsunderlag för kärnteknisk utrustning, licensierad mjukvara med exportrestriktioner, teknisk dokumentation under dual use-reglering.",
+      "answerHelp": {
+        "yes": "Ja, systemet behandlar exportkontrollklassificerad information. Särskilda krav tillkommer.",
+        "no": "Nej, systemet behandlar inte sådan information.",
+        "unclear": "Behöver utredas — kontakta exportkontrollansvarig."
+      },
+      "blocking": false,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Exportkontrollansvarig", "Informationsägare", "Juridik"],
+      "investigationHint": "Kontakta exportkontrollansvarig för att klargöra om systemet hanterar exportkontrollerad information.",
+      "notes": "Tilläggsfråga utanför CSL-modellen. Påverkar inte CSL-nivå men flaggar exportkontrollkrav."
+    },
+    {
+      "id": "QR04",
+      "section": "SCOPE",
+      "text": "Är systemet avsett att hantera personuppgifter som omfattas av GDPR?",
+      "helpText": "Personuppgifter enligt GDPR är all information som direkt eller indirekt kan kopplas till en levande fysisk person. Om systemet behandlar personuppgifter gäller dataskyddsförordningens krav parallellt med CSL-kraven — t.ex. rättslig grund, registerförteckning, konsekvensbedömning (DPIA), informationsplikt och rätt till radering.",
+      "exampleText": "Exempel: personalregister, behörighetsregister med namn, åtkomstloggar med användaridentitet, besöksloggar, hälsodata.",
+      "answerHelp": {
+        "yes": "Ja, systemet behandlar personuppgifter. GDPR-krav tillkommer.",
+        "no": "Nej, systemet behandlar inte personuppgifter.",
+        "unclear": "Behöver utredas — kontakta dataskyddsombud."
+      },
+      "blocking": false,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["Dataskyddsombud", "Systemägare", "Informationsägare"],
+      "investigationHint": "Kontakta dataskyddsombud (DPO) för att klargöra om personuppgifter behandlas.",
+      "notes": "Tilläggsfråga utanför CSL-modellen. Påverkar inte CSL-nivå men flaggar GDPR-krav."
+    },
+    {
+      "id": "QR05",
+      "section": "SCOPE",
+      "text": "Omfattas systemet av cybersäkerhetslagstiftningen (NIS2-direktivet)?",
+      "helpText": "Cybersäkerhetslagstiftningen (NIS2, implementerad i svensk lag) ställer krav på riskhantering, incidentrapportering och tekniska säkerhetsåtgärder för leverantörer av samhällsviktiga tjänster och digitala tjänster. Kärntekniska anläggningar omfattas vanligtvis. Om systemet omfattas tillkommer krav på t.ex. incidentrapportering inom 24/72 timmar, riskanalys, leverantörssäkerhet och ledningens ansvar.",
+      "exampleText": "Exempel: system inom energisektorn som tillhandahåller samhällsviktiga tjänster, OT-system vid kärnteknisk anläggning.",
+      "answerHelp": {
+        "yes": "Ja, systemet omfattas av cybersäkerhetslagstiftningen. NIS2-krav tillkommer.",
+        "no": "Nej, systemet omfattas inte.",
+        "unclear": "Behöver utredas — kontakta IT-säkerhetsansvarig eller juridik."
+      },
+      "blocking": false,
+      "appliesTo": ["ALL"],
+      "whoCanAnswer": ["IT-säkerhetsansvarig", "CISO", "Juridik"],
+      "investigationHint": "Kontakta IT-säkerhetsansvarig eller juridik för att klargöra om systemet omfattas av NIS2.",
+      "notes": "Tilläggsfråga utanför CSL-modellen. Påverkar inte CSL-nivå men flaggar NIS2-krav."
+    },
+    {
       "id": "Q09",
       "section": "FUNCTION",
       "text": "Stöder systemet säker drift av anläggningen?",

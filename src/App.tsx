@@ -668,6 +668,7 @@ function Step5Results({
         <ResultSummary
           result={enrichedResult}
           questions={allQuestions}
+          answers={state.answers}
           onExportJson={() => downloadJson(state)}
           onExportMarkdown={() => downloadMarkdown(state)}
           onExportPdf={() => exportPdf(state)}
