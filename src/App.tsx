@@ -907,8 +907,10 @@ function DemoLoginScreen({ onAuthenticate }: { onAuthenticate: () => void }) {
 
 function DemoBanner() {
   return (
-    <div className="bg-amber-500 px-4 py-1.5 text-center text-xs font-semibold text-white">
-      DEMO-VERSION — körs hos render.com — endast för demonstration och utvärdering
+    <div className="bg-amber-500 px-4 py-2 text-center text-xs font-medium text-white">
+      <span className="font-semibold">DEMO-VERSION</span> — Fritt att utforska, testa
+      klassificeringar och bekanta sig med verktyget. Ingen data sparas permanent. För
+      produktionsbruk körs cslFacts lokalt på egen dator.
     </div>
   );
 }
