@@ -82,6 +82,11 @@ const RAW_EXAMPLES: RawExample[] = [
       Q30: 'YES',
       Q31: 'NO',
       Q32: 'NO',
+      QR01: 'NO',
+      QR02: 'YES',
+      QR03: 'YES',
+      QR04: 'NO',
+      QR05: 'NO',
     },
     compliance: {
       // Generic 8.16
@@ -271,6 +276,11 @@ const RAW_EXAMPLES: RawExample[] = [
       Q30: 'YES',
       Q31: 'NO',
       Q32: 'NO',
+      QR01: 'NO',
+      QR02: 'YES',
+      QR03: 'YES',
+      QR04: 'NO',
+      QR05: 'NO',
     },
     compliance: {
       '8.16(a)': {
@@ -432,6 +442,11 @@ const RAW_EXAMPLES: RawExample[] = [
       Q30: 'YES',
       Q31: 'NO',
       Q32: 'NO',
+      QR01: 'NO',
+      QR02: 'NO',
+      QR03: 'UNCLEAR',
+      QR04: 'NO',
+      QR05: 'YES',
     },
     compliance: {
       '8.16(a)': {
@@ -590,6 +605,11 @@ const RAW_EXAMPLES: RawExample[] = [
       Q30: 'YES',
       Q31: 'NO',
       Q32: 'NO',
+      QR01: 'NO',
+      QR02: 'YES',
+      QR03: 'NO',
+      QR04: 'NO',
+      QR05: 'NO',
     },
     compliance: {
       '8.16(a)': {
@@ -728,6 +748,11 @@ const RAW_EXAMPLES: RawExample[] = [
       Q30: 'YES',
       Q31: 'NO',
       Q32: 'NO',
+      QR01: 'YES',
+      QR02: 'YES',
+      QR03: 'YES',
+      QR04: 'YES',
+      QR05: 'NO',
     },
     compliance: {
       '8.16(a)': {
@@ -887,6 +912,11 @@ const RAW_EXAMPLES: RawExample[] = [
       Q30: 'YES',
       Q31: 'NO',
       Q32: 'NO',
+      QR01: 'NO',
+      QR02: 'NO',
+      QR03: 'NO',
+      QR04: 'NO',
+      QR05: 'YES',
     },
     compliance: {
       '8.16(a)': {
@@ -1042,6 +1072,11 @@ const RAW_EXAMPLES: RawExample[] = [
       Q30: 'YES',
       Q31: 'NO',
       Q32: 'NO',
+      QR01: 'NO',
+      QR02: 'NO',
+      QR03: 'NO',
+      QR04: 'YES',
+      QR05: 'NO',
     },
     compliance: {
       '8.16(a)': {
